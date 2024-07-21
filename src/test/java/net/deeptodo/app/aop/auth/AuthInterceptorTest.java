@@ -40,7 +40,7 @@ class AuthInterceptorTest {
         );
         //when & then
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/projects")
+                        MockMvcRequestBuilders.get("/api/v1/projects")
                                 .cookie(new Cookie("access_token", "token")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -75,7 +75,7 @@ class AuthInterceptorTest {
         );
         //when & then
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/projects"))
+                        MockMvcRequestBuilders.get("/api/v1/projects"))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 

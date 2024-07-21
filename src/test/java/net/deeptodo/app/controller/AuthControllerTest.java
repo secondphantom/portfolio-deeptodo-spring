@@ -37,7 +37,7 @@ class AuthControllerTest {
                 new AuthUrlServiceResponse(redirectUrl)
         );
         //when & then
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth/login/oauth/google"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/auth/login/oauth/google"))
                 .andExpect(MockMvcResultMatchers.status().isFound())
                 .andExpect(MockMvcResultMatchers.redirectedUrl(redirectUrl));
 
@@ -58,7 +58,7 @@ class AuthControllerTest {
 
         //when & then
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/auth/login/oauth/google/callback")
+                        MockMvcRequestBuilders.get("/api/auth/login/oauth/google/callback")
                                 .param("code", "code")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -84,7 +84,7 @@ class AuthControllerTest {
         );
         //when & then
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/auth/verify-access-token")
+                        MockMvcRequestBuilders.get("/api/auth/verify-access-token")
                                 .cookie(new Cookie("access_token", "token"))
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -106,7 +106,7 @@ class AuthControllerTest {
 
         //when & then
         mockMvc.perform(
-                        MockMvcRequestBuilders.post("/auth/refresh-access-token")
+                        MockMvcRequestBuilders.post("/api/auth/refresh-access-token")
                                 .cookie(new Cookie("refresh_token", "token"))
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -124,7 +124,7 @@ class AuthControllerTest {
     public void signOut_success() throws Exception {
         //when & then
         mockMvc.perform(
-                        MockMvcRequestBuilders.post("/auth/sign-out")
+                        MockMvcRequestBuilders.post("/api/auth/sign-out")
                                 .cookie(new Cookie("refresh_token", "token"))
                                 .cookie(new Cookie("access_token", "token"))
                 )
