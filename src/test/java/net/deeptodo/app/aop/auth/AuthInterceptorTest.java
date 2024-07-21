@@ -1,7 +1,7 @@
 package net.deeptodo.app.aop.auth;
 
 import jakarta.servlet.http.Cookie;
-import net.deeptodo.app.aop.auth.dto.AuthUser;
+import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.application.auth.AuthService;
 import net.deeptodo.app.application.auth.dto.response.AuthUserResponse;
 import org.assertj.core.api.Assertions;
@@ -62,7 +62,7 @@ class AuthInterceptorTest {
 
         // Then
         Assertions.assertThat(result).isEqualTo(true);
-        AuthUser authUser = (AuthUser) request.getAttribute("authUser");
+        AuthUserInfo authUser = (AuthUserInfo) request.getAttribute("authUserInfo");
         Assertions.assertThat(authUser.userId()).isEqualTo(authUserResponse.userId());
     }
 

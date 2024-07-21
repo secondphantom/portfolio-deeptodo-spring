@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@Slf4j
 @RestController
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping("/auth/login/oauth/google")
+    @GetMapping("/login/oauth/google")
     public ResponseEntity<Void> loginOauthGoogle(
             HttpServletResponse response
     ) throws IOException {
@@ -33,7 +33,7 @@ public class AuthController {
     }
 
 
-    @GetMapping("/auth/login/oauth/google/callback")
+    @GetMapping("/login/oauth/google/callback")
     public ResponseEntity<Void> loginOauthGoogleCallback(
             @RequestParam("code") String code,
             HttpServletResponse response
@@ -48,7 +48,7 @@ public class AuthController {
     }
 
 
-    @GetMapping("/auth/verify-access-token")
+    @GetMapping("/verify-access-token")
     public ResponseEntity<VerifyAccessTokenResponse> verifyAccessToken(
             @CookieValue(value = "access_token", required = false) String accessToken
     ) {
@@ -58,7 +58,7 @@ public class AuthController {
         return ResponseEntity.ok(VerifyAccessTokenResponse.of(authUserResponse.userId()));
     }
 
-    @PostMapping("/auth/refresh-access-token")
+    @PostMapping("/refresh-access-token")
     public ResponseEntity<Void> refreshAccessToken(
             @CookieValue(value = "refresh_token", required = false) String refreshToken,
             HttpServletResponse response
@@ -72,7 +72,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/auth/sign-out")
+    @PostMapping("/sign-out")
     public ResponseEntity<Void> signOut(
             HttpServletResponse response
     ) {

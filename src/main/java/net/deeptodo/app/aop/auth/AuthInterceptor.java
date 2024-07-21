@@ -4,7 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import net.deeptodo.app.aop.auth.dto.AuthUser;
+import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.application.auth.AuthService;
 import net.deeptodo.app.application.auth.dto.response.AuthUserResponse;
 import net.deeptodo.app.application.auth.exception.AuthErrorCode;
@@ -34,11 +34,9 @@ public class AuthInterceptor implements HandlerInterceptor {
                         .findFirst()
                         .orElseThrow(() -> new UnauthorizedException(AuthErrorCode.getErrorCode(AuthErrorCode.UNAUTHORIZED_INVALID_TOKEN))))
                 .orElseThrow(() -> new UnauthorizedException(AuthErrorCode.getErrorCode(AuthErrorCode.UNAUTHORIZED_INVALID_TOKEN)));
-        System.out.println("accessToken = " + accessToken);
         AuthUserResponse authUserResponse = authService.verifyAccessToken(accessToken);
 
-        System.out.println("authUserResponse = " + authUserResponse);
-        request.setAttribute("authUser", new AuthUser(authUserResponse.userId()));
+        request.setAttribute("authUserInfo", new AuthUserInfo(authUserResponse.userId()));
 
         return true;
     }

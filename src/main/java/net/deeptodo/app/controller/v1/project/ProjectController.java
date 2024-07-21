@@ -1,12 +1,14 @@
-package net.deeptodo.app.controller.project;
+package net.deeptodo.app.controller.v1.project;
 
 import lombok.RequiredArgsConstructor;
+import net.deeptodo.app.aop.auth.AuthUser;
+import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.application.project.ProjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("/api/v1/projects")
 @RequiredArgsConstructor
 public class ProjectController {
 
@@ -18,7 +20,9 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<Void> getProjectsByQuery() {
+    public ResponseEntity<Void> getProjectsByQuery(
+            @AuthUser AuthUserInfo authUserInfo
+    ) {
         return ResponseEntity.ok().build();
     }
 

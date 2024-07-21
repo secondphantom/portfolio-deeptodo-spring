@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-#      ddl-auto: create-drop
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
@@ -27,4 +27,4 @@ oauth2:
       google:
         client-id: 249976018966-7g7s8qea22kcbc9q2s3ng5tgiebeie81.apps.googleusercontent.com
         client-secret: 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
-        redirect-url: http://localhost:8080/auth/login/oauth/google/callback
+        redirect-url: http://localhost:8080/api/auth/login/oauth/google/callback
