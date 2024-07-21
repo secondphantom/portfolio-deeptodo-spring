@@ -3,9 +3,9 @@ package net.deeptodo.app.application.auth;
 import lombok.RequiredArgsConstructor;
 import net.deeptodo.app.application.auth.dto.JwtPayload;
 import net.deeptodo.app.application.auth.dto.OauthUser;
-import net.deeptodo.app.application.auth.dto.response.AuthUrlResponse;
-import net.deeptodo.app.application.auth.dto.response.AuthUserResponse;
-import net.deeptodo.app.application.auth.dto.response.TokenResponse;
+import net.deeptodo.app.application.auth.dto.response.AuthUrlServiceResponse;
+import net.deeptodo.app.application.auth.dto.response.AuthUserServiceResponse;
+import net.deeptodo.app.application.auth.dto.response.TokenServiceResponse;
 import net.deeptodo.app.application.auth.exception.AuthErrorCode;
 import net.deeptodo.app.application.auth.infrastructure.jwt.JwtUtils;
 import net.deeptodo.app.application.auth.interfaces.ProvidersUtils;
@@ -32,24 +32,24 @@ public class AuthService {
     private final JwtUtils jwtUtils;
 
 
-    public AuthUrlResponse loginOauthGoogle() {
+    public AuthUrlServiceResponse loginOauthGoogle() {
         String authUrl = googleProviderUtils.generateAuthUrl().orElseThrow(() ->
                 new InternalSeverErrorException(ErrorCode.getErrorCode(CommonErrorCode.INTERNAL))
         );
 
-        return new AuthUrlResponse(authUrl);
+        return new AuthUrlServiceResponse(authUrl);
     }
 
 
     @Transactional
-    public TokenResponse loginOauthGoogleCallback(String code) {
+    public TokenServiceResponse loginOauthGoogleCallback(String code) {
         OauthUser oauthUser = googleProviderUtils.getOauthUser(code).orElseThrow(() ->
                 new InternalSeverErrorException(ErrorCode.getErrorCode(CommonErrorCode.INTERNAL))
         );
 
         Long userId = getUserIdByOauthUser(oauthUser);
 
-        return TokenResponse.of(
+        return TokenServiceResponse.of(
                 getAccessToken(userId),
                 jwtUtils.getMaxAge(TokenType.ACCESS),
                 getRefreshToken(userId),
@@ -95,7 +95,7 @@ public class AuthService {
     }
 
 
-    public AuthUserResponse verifyAccessToken(String token) {
+    public AuthUserServiceResponse verifyAccessToken(String token) {
         if (token == null || token.isEmpty()) {
             throw new UnauthorizedException(AuthErrorCode.getErrorCode(AuthErrorCode.UNAUTHORIZED_INVALID_TOKEN));
         }
@@ -103,11 +103,11 @@ public class AuthService {
         JwtPayload jwtPayload = jwtUtils.validateToken(TokenType.ACCESS, token)
                 .orElseThrow(() -> new UnauthorizedException(AuthErrorCode.getErrorCode(AuthErrorCode.UNAUTHORIZED_INVALID_TOKEN)));
 
-        return AuthUserResponse.of(jwtPayload.userId());
+        return AuthUserServiceResponse.of(jwtPayload.userId());
     }
 
     @Transactional(readOnly = true)
-    public TokenResponse verifyRefreshToken(String token) {
+    public TokenServiceResponse verifyRefreshToken(String token) {
 
         if (token == null || token.isEmpty()) {
             throw new UnauthorizedException(AuthErrorCode.getErrorCode(AuthErrorCode.UNAUTHORIZED_INVALID_TOKEN));
@@ -119,7 +119,7 @@ public class AuthService {
         User findUser = userRepository.getUserById(jwtPayload.userId())
                 .orElseThrow(() -> new UnauthorizedException(AuthErrorCode.getErrorCode(AuthErrorCode.UNAUTHORIZED_NOT_EXISTED_MEMBER)));
 
-        return TokenResponse.of(
+        return TokenServiceResponse.of(
                 getAccessToken(findUser.getId()),
                 jwtUtils.getMaxAge(TokenType.ACCESS),
                 getRefreshToken(findUser.getId()),

@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.application.auth.AuthService;
-import net.deeptodo.app.application.auth.dto.response.AuthUserResponse;
+import net.deeptodo.app.application.auth.dto.response.AuthUserServiceResponse;
 import net.deeptodo.app.application.auth.exception.AuthErrorCode;
 import net.deeptodo.app.common.exception.UnauthorizedException;
 import org.springframework.stereotype.Component;
@@ -34,9 +34,9 @@ public class AuthInterceptor implements HandlerInterceptor {
                         .findFirst()
                         .orElseThrow(() -> new UnauthorizedException(AuthErrorCode.getErrorCode(AuthErrorCode.UNAUTHORIZED_INVALID_TOKEN))))
                 .orElseThrow(() -> new UnauthorizedException(AuthErrorCode.getErrorCode(AuthErrorCode.UNAUTHORIZED_INVALID_TOKEN)));
-        AuthUserResponse authUserResponse = authService.verifyAccessToken(accessToken);
+        AuthUserServiceResponse authUserServiceResponse = authService.verifyAccessToken(accessToken);
 
-        request.setAttribute("authUserInfo", new AuthUserInfo(authUserResponse.userId()));
+        request.setAttribute("authUserInfo", new AuthUserInfo(authUserServiceResponse.userId()));
 
         return true;
     }

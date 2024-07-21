@@ -2,9 +2,9 @@ package net.deeptodo.app.controller;
 
 import jakarta.servlet.http.Cookie;
 import net.deeptodo.app.application.auth.AuthService;
-import net.deeptodo.app.application.auth.dto.response.AuthUrlResponse;
-import net.deeptodo.app.application.auth.dto.response.AuthUserResponse;
-import net.deeptodo.app.application.auth.dto.response.TokenResponse;
+import net.deeptodo.app.application.auth.dto.response.AuthUrlServiceResponse;
+import net.deeptodo.app.application.auth.dto.response.AuthUserServiceResponse;
+import net.deeptodo.app.application.auth.dto.response.TokenServiceResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,7 +34,7 @@ class AuthControllerTest {
         String redirectUrl = "redirectUrl";
 
         given(authService.loginOauthGoogle()).willReturn(
-                new AuthUrlResponse(redirectUrl)
+                new AuthUrlServiceResponse(redirectUrl)
         );
         //when & then
         mockMvc.perform(MockMvcRequestBuilders.get("/auth/login/oauth/google"))
@@ -46,14 +46,14 @@ class AuthControllerTest {
     @Test
     public void loginOauthGoogleCallback_success() throws Exception {
         //given
-        TokenResponse tokenResponse = TokenResponse.of(
+        TokenServiceResponse tokenServiceResponse = TokenServiceResponse.of(
                 "access_token",
                 10,
                 "refresh_token",
                 10);
 
         given(authService.loginOauthGoogleCallback("code")).willReturn(
-                tokenResponse
+                tokenServiceResponse
         );
 
         //when & then
@@ -63,24 +63,24 @@ class AuthControllerTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.cookie().value(
-                        "access_token", tokenResponse.accessToken()))
+                        "access_token", tokenServiceResponse.accessToken()))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
-                        "access_token", tokenResponse.accessTokenMaxAge()))
+                        "access_token", tokenServiceResponse.accessTokenMaxAge()))
                 .andExpect(MockMvcResultMatchers.cookie().value(
-                        "refresh_token", tokenResponse.refreshToken()))
+                        "refresh_token", tokenServiceResponse.refreshToken()))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
-                        "refresh_token", tokenResponse.refreshTokenMaxAge()));
+                        "refresh_token", tokenServiceResponse.refreshTokenMaxAge()));
     }
 
 
     @Test
     public void verifyAccessToken_success() throws Exception {
         //given
-        AuthUserResponse authUserResponse = AuthUserResponse.of(
+        AuthUserServiceResponse authUserServiceResponse = AuthUserServiceResponse.of(
                 1L);
 
         given(authService.verifyAccessToken("token")).willReturn(
-                authUserResponse
+                authUserServiceResponse
         );
         //when & then
         mockMvc.perform(
@@ -88,20 +88,20 @@ class AuthControllerTest {
                                 .cookie(new Cookie("access_token", "token"))
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(authUserResponse.userId()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(authUserServiceResponse.userId()));
     }
 
     @Test
     public void refreshAccessToken_success() throws Exception {
         //given
-        TokenResponse tokenResponse = TokenResponse.of(
+        TokenServiceResponse tokenServiceResponse = TokenServiceResponse.of(
                 "access_token",
                 10,
                 "refresh_token",
                 10);
 
         given(authService.verifyRefreshToken("token")).willReturn(
-                tokenResponse
+                tokenServiceResponse
         );
 
         //when & then
@@ -111,15 +111,15 @@ class AuthControllerTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.cookie().value(
-                        "access_token", tokenResponse.accessToken()))
+                        "access_token", tokenServiceResponse.accessToken()))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
-                        "access_token", tokenResponse.accessTokenMaxAge()))
+                        "access_token", tokenServiceResponse.accessTokenMaxAge()))
                 .andExpect(MockMvcResultMatchers.cookie().value(
-                        "refresh_token", tokenResponse.refreshToken()))
+                        "refresh_token", tokenServiceResponse.refreshToken()))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
-                        "refresh_token", tokenResponse.refreshTokenMaxAge()));
+                        "refresh_token", tokenServiceResponse.refreshTokenMaxAge()));
     }
-    
+
     @Test
     public void signOut_success() throws Exception {
         //when & then
