@@ -22,13 +22,9 @@ public class Subscription {
     @JoinColumn(name = "plan_id", nullable = false)
     private SubscriptionPlan plan;
 
-    @Column(nullable = false)
     private LocalDateTime startDate;
-    @Column(nullable = false)
     private LocalDateTime endDate;
-    @Column(nullable = false)
     private String status;
-    @Column(nullable = false)
     private Integer billingCycleDays;
 
     private LocalDateTime createdAt;

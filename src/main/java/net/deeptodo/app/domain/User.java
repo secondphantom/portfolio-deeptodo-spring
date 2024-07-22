@@ -27,7 +27,7 @@ public class User {
     private OauthServerType oauthServerType;
     private String oauthToken;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Subscription subscription;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -35,7 +35,6 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Payment> payments = new ArrayList<>();
-
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
