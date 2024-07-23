@@ -61,12 +61,10 @@ public class Project {
         return Project.builder()
                 .user(user)
                 .title("")
-                .version(1)
+                .version(0)
                 .root(new ArrayList<>())
                 .boards(new HashMap<>())
                 .todos(new HashMap<>())
                 .build();
     }
-
-
 }

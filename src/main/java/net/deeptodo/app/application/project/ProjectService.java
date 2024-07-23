@@ -5,6 +5,7 @@ import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.application.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.application.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.application.project.dto.response.GetProjectByIdResponse;
+import net.deeptodo.app.application.project.dto.response.GetProjectVersionByIdResponse;
 import net.deeptodo.app.application.project.exception.ProjectErrorCode;
 import net.deeptodo.app.common.exception.ConflictException;
 import net.deeptodo.app.common.exception.NotFoundException;
@@ -89,6 +90,13 @@ public class ProjectService {
         Integer nextVersion = (dbVersion + 1) % VERSION_RANGE;
 
         return nextVersion;
+    }
+
+    public GetProjectVersionByIdResponse getProjectVersionById(AuthUserInfo authUserInfo, Long projectId){
+        Integer version = projectRepository.getVersionByIdAndUserId(projectId, authUserInfo.userId())
+                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.getErrorCode(ProjectErrorCode.NOT_FOUND_PROJECT)));
+
+        return GetProjectVersionByIdResponse.of(projectId,version);
     }
 
 

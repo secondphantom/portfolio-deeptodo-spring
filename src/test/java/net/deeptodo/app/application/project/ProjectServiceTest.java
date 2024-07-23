@@ -5,6 +5,7 @@ import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.application.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.application.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.application.project.dto.response.GetProjectByIdResponse;
+import net.deeptodo.app.application.project.dto.response.GetProjectVersionByIdResponse;
 import net.deeptodo.app.common.exception.ConflictException;
 import net.deeptodo.app.common.exception.NotFoundException;
 import net.deeptodo.app.common.exception.UnauthorizedException;
@@ -37,7 +38,7 @@ class ProjectServiceTest {
     private ProjectService projectService;
 
     @Test
-    public void createProject_success() throws Exception {
+    public void createProject_success() {
         //given
         User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
         Long userId = userRepository.create(newUser);
@@ -50,17 +51,15 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void createProject_fail_not_found_user() throws Exception {
+    public void createProject_fail_not_found_user() {
         //when & then
         assertThatThrownBy(
-                () -> {
-                    CreateProjectResponse response = projectService.createProject(new AuthUserInfo(2L));
-                }
+                () -> projectService.createProject(new AuthUserInfo(2L))
         ).isInstanceOf(UnauthorizedException.class);
     }
 
     @Test
-    public void getProjectById_success() throws Exception {
+    public void getProjectById_success() {
         //given
         User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
         userRepository.create(newUser);
@@ -75,17 +74,15 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void getProjectById_fail_not_found() throws Exception {
+    public void getProjectById_fail_not_found() {
         //when & then
         assertThatThrownBy(
-                () -> {
-                    GetProjectByIdResponse response = projectService.getProjectById(new AuthUserInfo(1L), 1L);
-                }
+                () -> projectService.getProjectById(new AuthUserInfo(1L), 1L)
         ).isInstanceOf(NotFoundException.class);
     }
 
     @Test
-    public void deleteProjectById_success() throws Exception {
+    public void deleteProjectById_success() {
         //given
         User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
         userRepository.create(newUser);
@@ -101,7 +98,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void updateProjectById_success() throws Exception {
+    public void updateProjectById_success() {
         //given
         User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
         userRepository.create(newUser);
@@ -132,7 +129,7 @@ class ProjectServiceTest {
 
 
     @Test
-    public void updateProjectById_fail_version_conflict() throws Exception {
+    public void updateProjectById_fail_version_conflict() {
         //given
         User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
         userRepository.create(newUser);
@@ -146,13 +143,34 @@ class ProjectServiceTest {
 
         //when & then
         assertThatThrownBy(
-                () -> {
-                    projectService.updateProjectById(
-                            new AuthUserInfo(newUser.getId()),
-                            newProject.getId(),
-                            dto);
-
-                }
+                () -> projectService.updateProjectById(
+                        new AuthUserInfo(newUser.getId()),
+                        newProject.getId(),
+                        dto)
         ).isInstanceOf(ConflictException.class);
+    }
+    
+    @Test
+    public void getProjectVersionById_success() {
+        //given
+        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        userRepository.create(newUser);
+        Project newProject = Project.createNewProject(newUser);
+        projectRepository.create(newProject);
+        
+        //when
+        GetProjectVersionByIdResponse response = projectService.getProjectVersionById(new AuthUserInfo(newUser.getId()), newProject.getId());
+
+        //then
+        assertThat(response.projectId()).isEqualTo(newProject.getId());
+        assertThat(response.version()).isEqualTo(0);
+    }
+
+    @Test
+    public void getProjectVersionById_fail_not_found() {
+        //when & then
+        assertThatThrownBy(
+                () -> projectService.getProjectVersionById(new AuthUserInfo(1L), 1L)
+        ).isInstanceOf(NotFoundException.class);
     }
 }
