@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import net.deeptodo.app.aop.auth.AuthUser;
 import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.application.project.ProjectService;
+import net.deeptodo.app.application.project.dto.response.CreateProjectResponse;
+import net.deeptodo.app.application.project.dto.response.GetProjectByIdResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +17,13 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping
-    public ResponseEntity<Void> createProject() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CreateProjectResponse> createProject(
+            @AuthUser AuthUserInfo authUserInfo
+    ) {
+
+        CreateProjectResponse createProjectResponse = projectService.createProject(authUserInfo);
+
+        return ResponseEntity.ok(createProjectResponse);
     }
 
     @GetMapping
@@ -27,8 +34,15 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<Void> getProjectById() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<GetProjectByIdResponse> getProjectById(
+            @AuthUser AuthUserInfo authUserInfo,
+            @PathVariable Long projectId
+    ) {
+
+        GetProjectByIdResponse getProjectByIdResponse
+        = projectService.getProjectById(authUserInfo,projectId);
+
+        return ResponseEntity.ok(getProjectByIdResponse);
     }
 
     @PatchMapping("/{projectId}")
@@ -40,5 +54,10 @@ public class ProjectController {
     public ResponseEntity<Void> deleteProjectById() {
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/{projectId}/version")
+    public ResponseEntity<Void> getProjectVersionById() {
+        return ResponseEntity.ok().build();
+    }
+
 
 }

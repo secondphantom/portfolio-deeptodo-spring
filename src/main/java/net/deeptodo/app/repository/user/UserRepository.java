@@ -1,4 +1,4 @@
-package net.deeptodo.app.repository;
+package net.deeptodo.app.repository.user;
 
 import lombok.RequiredArgsConstructor;
 import net.deeptodo.app.domain.User;
@@ -17,11 +17,11 @@ public class UserRepository {
         return user.getId();
     }
 
-    public Optional<User> getUserById(Long userId) {
+    public Optional<User> getById(Long userId) {
         return userJpaRepository.findById(userId);
     }
 
-    public Optional<User> getUserByEmail(String email) {
+    public Optional<User> getByEmail(String email) {
         return userJpaRepository.findByEmail(email);
     }
 

@@ -16,7 +16,7 @@ import net.deeptodo.app.common.exception.InternalSeverErrorException;
 import net.deeptodo.app.common.exception.UnauthorizedException;
 import net.deeptodo.app.domain.OauthServerType;
 import net.deeptodo.app.domain.User;
-import net.deeptodo.app.repository.UserRepository;
+import net.deeptodo.app.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +59,7 @@ public class AuthService {
 
 
     private Long getUserIdByOauthUser(OauthUser oauthUser) {
-        Optional<User> findUser = userRepository.getUserByEmail(oauthUser.email());
+        Optional<User> findUser = userRepository.getByEmail(oauthUser.email());
 
         if (findUser.isPresent()) {
             return findUser.get().getId();
@@ -116,7 +116,7 @@ public class AuthService {
         JwtPayload jwtPayload = jwtUtils.validateToken(TokenType.REFRESH, token)
                 .orElseThrow(() -> new UnauthorizedException(AuthErrorCode.getErrorCode(AuthErrorCode.UNAUTHORIZED_INVALID_TOKEN)));
 
-        User findUser = userRepository.getUserById(jwtPayload.userId())
+        User findUser = userRepository.getById(jwtPayload.userId())
                 .orElseThrow(() -> new UnauthorizedException(AuthErrorCode.getErrorCode(AuthErrorCode.UNAUTHORIZED_NOT_EXISTED_MEMBER)));
 
         return TokenServiceResponse.of(

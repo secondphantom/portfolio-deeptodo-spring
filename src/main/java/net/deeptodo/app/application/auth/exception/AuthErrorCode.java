@@ -1,7 +1,6 @@
 package net.deeptodo.app.application.auth.exception;
 
 import lombok.Getter;
-import net.deeptodo.app.common.exception.CommonErrorCode;
 import net.deeptodo.app.common.exception.ErrorCode;
 
 @Getter
@@ -18,7 +17,7 @@ public enum AuthErrorCode {
         this.message = message;
     }
 
-    public static ErrorCode getErrorCode(AuthErrorCode errorCode){
+    public static ErrorCode getErrorCode(AuthErrorCode errorCode) {
         return new ErrorCode<>(errorCode.getCode(), errorCode.getMessage());
     }
 

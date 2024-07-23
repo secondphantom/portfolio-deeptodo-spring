@@ -10,7 +10,7 @@ import net.deeptodo.app.application.auth.interfaces.ProvidersUtils;
 import net.deeptodo.app.application.auth.interfaces.TokenType;
 import net.deeptodo.app.common.exception.UnauthorizedException;
 import net.deeptodo.app.domain.User;
-import net.deeptodo.app.repository.UserRepository;
+import net.deeptodo.app.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

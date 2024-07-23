@@ -1,4 +1,4 @@
-package net.deeptodo.app.repository;
+package net.deeptodo.app.repository.user;
 
 import jakarta.persistence.EntityManager;
 import net.deeptodo.app.domain.User;
@@ -10,8 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class UserRepositoryTest {
 
@@ -22,13 +20,13 @@ class UserRepositoryTest {
 
     @Test
     @Transactional
-    public void getUserByEmail() throws Exception {
+    public void getByEmail() throws Exception {
         //given
         User user = User.builder().email("test@email.com").build();
         userRepository.create(user);
 
         //when
-        Optional<User> userByEmail = userRepository.getUserByEmail(user.getEmail());
+        Optional<User> userByEmail = userRepository.getByEmail(user.getEmail());
 
         //then
         Assertions.assertThat(user).isEqualTo(userByEmail.get());

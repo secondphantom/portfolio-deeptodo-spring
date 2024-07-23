@@ -1,8 +1,9 @@
-package net.deeptodo.app.repository;
+package net.deeptodo.app.repository.project;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import net.deeptodo.app.domain.*;
+import net.deeptodo.app.repository.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,27 +43,25 @@ class ProjectRepositoryTest {
         userRepository.create(user);
 
         Map<String, Board> boards = new HashMap<>();
-        Board board = new Board();
-        board.setTitle("Sample Board");
+        Board board = Board.builder().title("Sample Board").build();
         boards.put("board1", board);
         boards.put("board2", board);
 
         Map<String, Todo> todos = new HashMap<>();
-        Todo todo = new Todo();
-        todo.setTitle("Sample Todo");
-        todo.setDone(false);
-        todo.setExpand(true);
-        todo.setTodoId("todo1");
-        todo.setStartDate(LocalDateTime.now());
-        todo.setEndDate(LocalDateTime.now());
-        todo.setEnableCalendar(true);
-        todo.setSyncGoogleCalendar(false);
+        Todo todo = Todo.builder()
+                .title("Sample Todo")
+                .done(false)
+                .startDate(LocalDateTime.now())
+                .build();
         todos.put("todo1", todo);
+
+        List root = List.of("boardId", List.of("todoId", List.of()));
+
 
         Project project = Project.builder()
                 .user(user)
                 .title("Sample Project")
-                .root("root")
+                .root(root)
                 .boards(boards)
                 .todos(todos)
                 .build();
@@ -75,6 +75,7 @@ class ProjectRepositoryTest {
         assertThat(foundProject).isNotNull();
         assertThat(foundProject.getBoards()).isEqualTo(boards);
         assertThat(foundProject.getTodos()).isEqualTo(todos);
+        assertThat(foundProject.getRoot()).isEqualTo(root);
 
     }
 }
