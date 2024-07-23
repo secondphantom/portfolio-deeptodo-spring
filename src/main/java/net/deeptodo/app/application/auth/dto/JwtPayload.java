@@ -17,7 +17,7 @@ public record JwtPayload(
             try {
                 map.put(field.getName(), field.get(obj));
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 

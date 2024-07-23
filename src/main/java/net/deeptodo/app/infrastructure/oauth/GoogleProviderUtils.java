@@ -1,11 +1,10 @@
-package net.deeptodo.app.application.auth.infrastructure.oauth;
+package net.deeptodo.app.infrastructure.oauth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import net.deeptodo.app.application.auth.dto.OauthUser;
-import net.deeptodo.app.application.auth.interfaces.ProvidersUtils;
-import net.deeptodo.app.config.ConfigOauth2Google;
+import net.deeptodo.app.infrastructure.interfaces.ProvidersUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Optional;
 
@@ -22,9 +20,9 @@ import java.util.Optional;
 public class GoogleProviderUtils implements ProvidersUtils {
 
 
-    private final ConfigOauth2Google configOauth2Google;
+    private final Oauth2GoogleProperties oauth2GoogleProperties;
 
-    public Optional<String> generateAuthUrl(){
+    public Optional<String> generateAuthUrl() {
 
         try {
             String scope = "email profile";
@@ -34,8 +32,8 @@ public class GoogleProviderUtils implements ProvidersUtils {
             String url = String.format("%s?response_type=%s&client_id=%s&redirect_uri=%s&scope=%s",
                     authUrl,
                     responseType,
-                    URLEncoder.encode(configOauth2Google.getClientId(), "UTF-8"),
-                    URLEncoder.encode(configOauth2Google.getRedirectUrl(), "UTF-8"),
+                    URLEncoder.encode(oauth2GoogleProperties.getClientId(), "UTF-8"),
+                    URLEncoder.encode(oauth2GoogleProperties.getRedirectUrl(), "UTF-8"),
                     URLEncoder.encode(scope, "UTF-8"));
             return Optional.of(url);
         } catch (Exception e) {
@@ -72,7 +70,7 @@ public class GoogleProviderUtils implements ProvidersUtils {
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
 
         String body = String.format("code=%s&client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code",
-                code, configOauth2Google.getClientId(), configOauth2Google.getClientSecret(), configOauth2Google.getRedirectUrl());
+                code, oauth2GoogleProperties.getClientId(), oauth2GoogleProperties.getClientSecret(), oauth2GoogleProperties.getRedirectUrl());
 
         HttpEntity<String> request = new HttpEntity<>(body, headers);
 

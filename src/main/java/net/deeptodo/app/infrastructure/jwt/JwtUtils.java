@@ -1,4 +1,4 @@
-package net.deeptodo.app.application.auth.infrastructure.jwt;
+package net.deeptodo.app.infrastructure.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -6,8 +6,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import net.deeptodo.app.application.auth.dto.JwtPayload;
-import net.deeptodo.app.application.auth.interfaces.TokenType;
-import net.deeptodo.app.config.ConfigJwt;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -21,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JwtUtils {
 
-    private final ConfigJwt configJwt;
+    private final JwtProperties jwtProperties;
 
     public String generateToken(
             LocalDateTime publishTime,
@@ -29,8 +27,8 @@ public class JwtUtils {
             JwtPayload payload) {
 
         Date targetDate = convertDate(publishTime);
-        String key = configJwt.findTokenKey(tokenType);
-        Integer expiredHours = configJwt.findExpiredHours(tokenType);
+        String key = jwtProperties.findTokenKey(tokenType);
+        Integer expiredHours = jwtProperties.findExpiredHours(tokenType);
 
         return Jwts.builder()
                 .setIssuedAt(targetDate)
@@ -50,7 +48,7 @@ public class JwtUtils {
 
 
     public Optional<JwtPayload> validateToken(TokenType tokenType, String token) {
-        String key = configJwt.findTokenKey(tokenType);
+        String key = jwtProperties.findTokenKey(tokenType);
         try {
             Claims claims = Jwts.parser()
                     .setSigningKey(key.getBytes(StandardCharsets.UTF_8))
@@ -65,6 +63,6 @@ public class JwtUtils {
 
 
     public Integer getMaxAge(TokenType tokenType) {
-        return configJwt.findExpiredHours(tokenType) * 60 * 60;
+        return jwtProperties.findExpiredHours(tokenType) * 60 * 60;
     }
 }

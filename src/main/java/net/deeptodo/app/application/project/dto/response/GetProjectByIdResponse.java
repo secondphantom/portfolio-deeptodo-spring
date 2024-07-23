@@ -12,19 +12,29 @@ public record GetProjectByIdResponse
         (
                 Long projectId,
                 Long userId,
+                Integer version,
                 String title,
-                List root,
-                Map<String, Board> boards,
-                Map<String, Todo> todos,
+                List<?> root,
+                Map<String, RecordBoard> boards,
+                Map<String, RecordTodo> todos,
                 LocalDateTime createdAt,
                 LocalDateTime updatedAt
         ) {
 
 
     @Builder
-    public GetProjectByIdResponse(Long projectId, Long userId, String title, List root, Map<String, Board> boards, Map<String, Todo> todos, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public GetProjectByIdResponse(Long projectId,
+                                  Long userId,
+                                  Integer version,
+                                  String title,
+                                  List<?> root,
+                                  Map<String, RecordBoard> boards,
+                                  Map<String, RecordTodo> todos,
+                                  LocalDateTime createdAt,
+                                  LocalDateTime updatedAt) {
         this.projectId = projectId;
         this.userId = userId;
+        this.version = version;
         this.title = title;
         this.root = root;
         this.boards = boards;
@@ -33,23 +43,24 @@ public record GetProjectByIdResponse
         this.updatedAt = updatedAt;
     }
 
-    public static GetProjectByIdResponse createResponseByProject(Project project) {
+    public static GetProjectByIdResponse fromProject(Project project) {
         return GetProjectByIdResponse.builder()
                 .projectId(project.getId())
                 .userId(project.getUser().getId())
+                .version(project.getVersion())
                 .title(project.getTitle())
                 .root(project.getRoot())
                 .boards(project.getBoards().entrySet()
                         .stream()
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
-                                entry -> new Board(entry.getValue().getTitle())
+                                entry -> new RecordBoard(entry.getValue().getTitle())
                         )))
                 .todos(project.getTodos().entrySet()
                         .stream()
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
-                                entry -> new Todo(
+                                entry -> new RecordTodo(
                                         entry.getValue().isDone(),
                                         entry.getValue().getTitle(),
                                         entry.getValue().isExpand(),
@@ -63,12 +74,12 @@ public record GetProjectByIdResponse
                 .build();
     }
 
-    private record Board(
+    private record RecordBoard(
             String title
     ) {
     }
 
-    private record Todo(
+    private record RecordTodo(
             boolean done,
             String title,
             boolean expand,

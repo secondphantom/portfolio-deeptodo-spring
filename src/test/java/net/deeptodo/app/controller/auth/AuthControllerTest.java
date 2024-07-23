@@ -1,10 +1,11 @@
-package net.deeptodo.app.controller;
+package net.deeptodo.app.controller.auth;
 
 import jakarta.servlet.http.Cookie;
 import net.deeptodo.app.application.auth.AuthService;
-import net.deeptodo.app.application.auth.dto.response.AuthUrlServiceResponse;
-import net.deeptodo.app.application.auth.dto.response.AuthUserServiceResponse;
-import net.deeptodo.app.application.auth.dto.response.TokenServiceResponse;
+import net.deeptodo.app.application.auth.dto.response.AuthUrlResponse;
+import net.deeptodo.app.application.auth.dto.response.AuthUserResponse;
+import net.deeptodo.app.application.auth.dto.response.TokenResponse;
+import net.deeptodo.app.controller.RestDocsIntegration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -24,7 +25,7 @@ class AuthControllerTest extends RestDocsIntegration {
         String redirectUrl = "redirectUrl";
 
         given(authService.loginOauthGoogle()).willReturn(
-                new AuthUrlServiceResponse(redirectUrl)
+                new AuthUrlResponse(redirectUrl)
         );
         //when & then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/auth/login/oauth/google"))
@@ -37,14 +38,14 @@ class AuthControllerTest extends RestDocsIntegration {
     @Test
     public void loginOauthGoogleCallback_success() throws Exception {
         //given
-        TokenServiceResponse tokenServiceResponse = TokenServiceResponse.of(
+        TokenResponse tokenResponse = TokenResponse.of(
                 "access_token",
                 10,
                 "refresh_token",
                 10);
 
         given(authService.loginOauthGoogleCallback("code")).willReturn(
-                tokenServiceResponse
+                tokenResponse
         );
 
         //when & then
@@ -54,25 +55,26 @@ class AuthControllerTest extends RestDocsIntegration {
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.cookie().value(
-                        "access_token", tokenServiceResponse.accessToken()))
+                        "access_token", tokenResponse.accessToken()))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
-                        "access_token", tokenServiceResponse.accessTokenMaxAge()))
+                        "access_token", tokenResponse.accessTokenMaxAge()))
                 .andExpect(MockMvcResultMatchers.cookie().value(
-                        "refresh_token", tokenServiceResponse.refreshToken()))
+                        "refresh_token", tokenResponse.refreshToken()))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
-                        "refresh_token", tokenServiceResponse.refreshTokenMaxAge()))
-                .andDo(restDocs.document());;
+                        "refresh_token", tokenResponse.refreshTokenMaxAge()))
+                .andDo(restDocs.document());
+
     }
 
 
     @Test
     public void verifyAccessToken_success() throws Exception {
         //given
-        AuthUserServiceResponse authUserServiceResponse = AuthUserServiceResponse.of(
+        AuthUserResponse authUserResponse = AuthUserResponse.of(
                 1L);
 
         given(authService.verifyAccessToken("token")).willReturn(
-                authUserServiceResponse
+                authUserResponse
         );
         //when & then
         mockMvc.perform(
@@ -80,21 +82,22 @@ class AuthControllerTest extends RestDocsIntegration {
                                 .cookie(new Cookie("access_token", "token"))
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(authUserServiceResponse.userId()))
-                .andDo(restDocs.document());;
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(authUserResponse.userId()))
+                .andDo(restDocs.document());
+
     }
 
     @Test
     public void refreshAccessToken_success() throws Exception {
         //given
-        TokenServiceResponse tokenServiceResponse = TokenServiceResponse.of(
+        TokenResponse tokenResponse = TokenResponse.of(
                 "access_token",
                 10,
                 "refresh_token",
                 10);
 
         given(authService.verifyRefreshToken("token")).willReturn(
-                tokenServiceResponse
+                tokenResponse
         );
 
         //when & then
@@ -104,14 +107,15 @@ class AuthControllerTest extends RestDocsIntegration {
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.cookie().value(
-                        "access_token", tokenServiceResponse.accessToken()))
+                        "access_token", tokenResponse.accessToken()))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
-                        "access_token", tokenServiceResponse.accessTokenMaxAge()))
+                        "access_token", tokenResponse.accessTokenMaxAge()))
                 .andExpect(MockMvcResultMatchers.cookie().value(
-                        "refresh_token", tokenServiceResponse.refreshToken()))
+                        "refresh_token", tokenResponse.refreshToken()))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
-                        "refresh_token", tokenServiceResponse.refreshTokenMaxAge()))
-                .andDo(restDocs.document());;
+                        "refresh_token", tokenResponse.refreshTokenMaxAge()))
+                .andDo(restDocs.document());
+
     }
 
     @Test
@@ -131,7 +135,8 @@ class AuthControllerTest extends RestDocsIntegration {
                         "refresh_token", (String) null))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
                         "refresh_token", 0))
-                .andDo(restDocs.document());;
+                .andDo(restDocs.document());
+
     }
 
 }

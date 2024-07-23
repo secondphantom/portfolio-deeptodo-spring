@@ -2,14 +2,14 @@ package net.deeptodo.app.application.auth;
 
 import net.deeptodo.app.application.auth.dto.JwtPayload;
 import net.deeptodo.app.application.auth.dto.OauthUser;
-import net.deeptodo.app.application.auth.dto.response.AuthUrlServiceResponse;
-import net.deeptodo.app.application.auth.dto.response.AuthUserServiceResponse;
-import net.deeptodo.app.application.auth.dto.response.TokenServiceResponse;
-import net.deeptodo.app.application.auth.infrastructure.jwt.JwtUtils;
-import net.deeptodo.app.application.auth.interfaces.ProvidersUtils;
-import net.deeptodo.app.application.auth.interfaces.TokenType;
+import net.deeptodo.app.application.auth.dto.response.AuthUrlResponse;
+import net.deeptodo.app.application.auth.dto.response.AuthUserResponse;
+import net.deeptodo.app.application.auth.dto.response.TokenResponse;
 import net.deeptodo.app.common.exception.UnauthorizedException;
 import net.deeptodo.app.domain.User;
+import net.deeptodo.app.infrastructure.interfaces.ProvidersUtils;
+import net.deeptodo.app.infrastructure.jwt.JwtUtils;
+import net.deeptodo.app.infrastructure.jwt.TokenType;
 import net.deeptodo.app.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -47,10 +47,10 @@ class AuthServiceTest {
         );
 
         //when
-        AuthUrlServiceResponse authUrlServiceResponse = authService.loginOauthGoogle();
+        AuthUrlResponse authUrlResponse = authService.loginOauthGoogle();
 
         //then
-        Assertions.assertThat(authUrlServiceResponse.authUrl()).isEqualTo(authUrl);
+        Assertions.assertThat(authUrlResponse.authUrl()).isEqualTo(authUrl);
     }
 
     @Test
@@ -62,16 +62,16 @@ class AuthServiceTest {
                 Optional.of(oauthUser)
         );
         //when
-        TokenServiceResponse tokenServiceResponse = authService.loginOauthGoogleCallback("code");
+        TokenResponse tokenResponse = authService.loginOauthGoogleCallback("code");
 
         //then
-        Assertions.assertThat(tokenServiceResponse.accessToken()).isNotNull();
-        Assertions.assertThat(tokenServiceResponse.refreshToken()).isNotNull();
-        Assertions.assertThat(tokenServiceResponse.accessTokenMaxAge()).isNotNull();
-        Assertions.assertThat(tokenServiceResponse.refreshTokenMaxAge()).isNotNull();
+        Assertions.assertThat(tokenResponse.accessToken()).isNotNull();
+        Assertions.assertThat(tokenResponse.refreshToken()).isNotNull();
+        Assertions.assertThat(tokenResponse.accessTokenMaxAge()).isNotNull();
+        Assertions.assertThat(tokenResponse.refreshTokenMaxAge()).isNotNull();
         String jwtRegex = "^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$";
-        Assertions.assertThat(tokenServiceResponse.accessToken()).matches(jwtRegex);
-        Assertions.assertThat(tokenServiceResponse.refreshToken()).matches(jwtRegex);
+        Assertions.assertThat(tokenResponse.accessToken()).matches(jwtRegex);
+        Assertions.assertThat(tokenResponse.refreshToken()).matches(jwtRegex);
     }
 
     @Test
@@ -81,10 +81,10 @@ class AuthServiceTest {
         String accessToken = jwtUtils.generateToken(LocalDateTime.now(), TokenType.ACCESS, payload);
 
         //when
-        AuthUserServiceResponse authUserServiceResponse = authService.verifyAccessToken(accessToken);
+        AuthUserResponse authUserResponse = authService.verifyAccessToken(accessToken);
 
         //then
-        Assertions.assertThat(authUserServiceResponse.userId()).isEqualTo(payload.userId());
+        Assertions.assertThat(authUserResponse.userId()).isEqualTo(payload.userId());
     }
 
     @Test
@@ -109,16 +109,16 @@ class AuthServiceTest {
         String token = jwtUtils.generateToken(LocalDateTime.now(), TokenType.REFRESH, payload);
 
         //when
-        TokenServiceResponse tokenServiceResponse = authService.verifyRefreshToken(token);
+        TokenResponse tokenResponse = authService.verifyRefreshToken(token);
 
         //then
-        Assertions.assertThat(tokenServiceResponse.accessToken()).isNotNull();
-        Assertions.assertThat(tokenServiceResponse.refreshToken()).isNotNull();
-        Assertions.assertThat(tokenServiceResponse.accessTokenMaxAge()).isNotNull();
-        Assertions.assertThat(tokenServiceResponse.refreshTokenMaxAge()).isNotNull();
+        Assertions.assertThat(tokenResponse.accessToken()).isNotNull();
+        Assertions.assertThat(tokenResponse.refreshToken()).isNotNull();
+        Assertions.assertThat(tokenResponse.accessTokenMaxAge()).isNotNull();
+        Assertions.assertThat(tokenResponse.refreshTokenMaxAge()).isNotNull();
         String jwtRegex = "^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$";
-        Assertions.assertThat(tokenServiceResponse.accessToken()).matches(jwtRegex);
-        Assertions.assertThat(tokenServiceResponse.refreshToken()).matches(jwtRegex);
+        Assertions.assertThat(tokenResponse.accessToken()).matches(jwtRegex);
+        Assertions.assertThat(tokenResponse.refreshToken()).matches(jwtRegex);
     }
 
     @Test

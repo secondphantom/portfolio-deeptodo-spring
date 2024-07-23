@@ -1,7 +1,6 @@
 package net.deeptodo.app.repository.project.dto;
 
 import lombok.Builder;
-import lombok.Getter;
 import net.deeptodo.app.domain.Board;
 import net.deeptodo.app.domain.Todo;
 
@@ -13,12 +12,12 @@ public record PartialUpdateProjectByIdAndUserIdDto(
         Long userId,
         Integer version,
         String title,
-        List root,
+        List<?> root,
         Map<String, Board> boards,
         Map<String, Todo> todos
 ) {
     @Builder
-    public PartialUpdateProjectByIdAndUserIdDto(Long projectId, Long userId, Integer version, String title, List root, Map<String, Board> boards, Map<String, Todo> todos) {
+    public PartialUpdateProjectByIdAndUserIdDto(Long projectId, Long userId, Integer version, String title, List<?> root, Map<String, Board> boards, Map<String, Todo> todos) {
         this.projectId = projectId;
         this.userId = userId;
         this.version = version;

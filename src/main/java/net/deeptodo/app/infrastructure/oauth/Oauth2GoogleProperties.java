@@ -1,4 +1,4 @@
-package net.deeptodo.app.config;
+package net.deeptodo.app.infrastructure.oauth;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
 @Getter
 @ConfigurationProperties("oauth2.client.providers.google")
 @Validated
-public class ConfigOauth2Google {
+public class Oauth2GoogleProperties {
 
     @NotEmpty
     private String clientId;
@@ -17,7 +17,7 @@ public class ConfigOauth2Google {
     @NotEmpty
     private String redirectUrl;
 
-    public ConfigOauth2Google
+    public Oauth2GoogleProperties
             (String clientId, String clientSecret, String redirectUrl) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;

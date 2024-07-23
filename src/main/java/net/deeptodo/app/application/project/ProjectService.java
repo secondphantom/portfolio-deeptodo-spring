@@ -44,7 +44,7 @@ public class ProjectService {
         Project findProject = projectRepository.getByIdAndUserId(projectId, authUserInfo.userId())
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.getErrorCode(ProjectErrorCode.NOT_FOUND_PROJECT)));
 
-        return GetProjectByIdResponse.createResponseByProject(findProject);
+        return GetProjectByIdResponse.fromProject(findProject);
     }
 
     public void deleteProjectById(AuthUserInfo authUserInfo, Long projectId) {
@@ -84,7 +84,7 @@ public class ProjectService {
             throw new ConflictException(ProjectErrorCode.getErrorCode(ProjectErrorCode.CONFLICT_PROJECT_VERSION));
         }
 
-        final Integer VERSION_RANGE = 100;
+        final int VERSION_RANGE = 100;
 
         Integer nextVersion = (dbVersion + 1) % VERSION_RANGE;
 

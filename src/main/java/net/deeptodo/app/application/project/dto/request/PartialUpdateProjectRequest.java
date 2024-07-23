@@ -12,12 +12,12 @@ public record PartialUpdateProjectRequest (
     @NotEmpty(message = "Need version field")
     Integer version,
     String title,
-    List root,
+    List<?> root,
     Map<String, Board> boards,
     Map<String, Todo> todos
 ) {
     @Builder
-    public PartialUpdateProjectRequest(Integer version, String title, List root, Map<String, Board> boards, Map<String, Todo> todos) {
+    public PartialUpdateProjectRequest(Integer version, String title, List<?> root, Map<String, Board> boards, Map<String, Todo> todos) {
         this.version = version;
         this.title = title;
         this.root = root;

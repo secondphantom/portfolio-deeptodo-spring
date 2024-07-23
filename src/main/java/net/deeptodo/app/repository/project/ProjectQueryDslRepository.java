@@ -3,7 +3,6 @@ package net.deeptodo.app.repository.project;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -26,7 +25,7 @@ public class ProjectQueryDslRepository {
     public Optional<Integer> findVersionByIdAndUserId(Long projectId, Long userId) {
         Integer version = queryFactory.select(project.version)
                 .from(project)
-                .where(project.id.eq(projectId),project.user.id.eq(userId))
+                .where(project.id.eq(projectId), project.user.id.eq(userId))
                 .fetchOne();
         return Optional.ofNullable(version);
     }
@@ -42,7 +41,7 @@ public class ProjectQueryDslRepository {
     public Optional<Long> findIdByIdAndUserId(Long projectId, Long userId) {
         Long id = queryFactory.select(project.id)
                 .from(project)
-                .where(project.id.eq(projectId),project.user.id.eq(userId))
+                .where(project.id.eq(projectId), project.user.id.eq(userId))
                 .fetchOne();
         return Optional.ofNullable(id);
     }

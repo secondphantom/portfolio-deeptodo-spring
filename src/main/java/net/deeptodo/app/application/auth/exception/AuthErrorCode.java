@@ -17,7 +17,7 @@ public enum AuthErrorCode {
         this.message = message;
     }
 
-    public static ErrorCode getErrorCode(AuthErrorCode errorCode) {
+    public static ErrorCode<?> getErrorCode(AuthErrorCode errorCode) {
         return new ErrorCode<>(errorCode.getCode(), errorCode.getMessage());
     }
 

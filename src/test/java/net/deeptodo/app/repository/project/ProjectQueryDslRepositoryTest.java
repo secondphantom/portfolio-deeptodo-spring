@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager;
 import net.deeptodo.app.domain.OauthServerType;
 import net.deeptodo.app.domain.Project;
 import net.deeptodo.app.domain.User;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -51,7 +50,7 @@ class ProjectQueryDslRepositoryTest {
         em.flush();
 
         //when
-        Optional<Long> id = projectQueryDslRepository.findIdByIdAndUserId(newProject.getId(),newUser.getId());
+        Optional<Long> id = projectQueryDslRepository.findIdByIdAndUserId(newProject.getId(), newUser.getId());
 
         //then
 

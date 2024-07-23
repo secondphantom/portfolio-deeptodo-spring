@@ -3,11 +3,10 @@ package net.deeptodo.app.controller.auth;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.deeptodo.app.application.auth.AuthService;
-import net.deeptodo.app.application.auth.dto.response.AuthUrlServiceResponse;
-import net.deeptodo.app.application.auth.dto.response.AuthUserServiceResponse;
-import net.deeptodo.app.application.auth.dto.response.TokenServiceResponse;
+import net.deeptodo.app.application.auth.dto.response.AuthUrlResponse;
+import net.deeptodo.app.application.auth.dto.response.AuthUserResponse;
+import net.deeptodo.app.application.auth.dto.response.TokenResponse;
 import net.deeptodo.app.common.infrastructure.CookieUtils;
-import net.deeptodo.app.controller.auth.dto.response.VerifyAccessTokenResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +24,8 @@ public class AuthController {
             HttpServletResponse response
     ) throws IOException {
 
-        AuthUrlServiceResponse authUrlServiceResponse = authService.loginOauthGoogle();
-        response.sendRedirect(authUrlServiceResponse.authUrl());
+        AuthUrlResponse authUrlResponse = authService.loginOauthGoogle();
+        response.sendRedirect(authUrlResponse.authUrl());
 
         return ResponseEntity.ok().build();
     }
@@ -38,23 +37,23 @@ public class AuthController {
             HttpServletResponse response
     ) {
 
-        TokenServiceResponse tokenServiceResponse = authService.loginOauthGoogleCallback(code);
+        TokenResponse tokenResponse = authService.loginOauthGoogleCallback(code);
 
-        CookieUtils.addCookie(response, "access_token", tokenServiceResponse.accessToken(), tokenServiceResponse.accessTokenMaxAge());
-        CookieUtils.addCookie(response, "refresh_token", tokenServiceResponse.refreshToken(), tokenServiceResponse.refreshTokenMaxAge());
+        CookieUtils.addCookie(response, "access_token", tokenResponse.accessToken(), tokenResponse.accessTokenMaxAge());
+        CookieUtils.addCookie(response, "refresh_token", tokenResponse.refreshToken(), tokenResponse.refreshTokenMaxAge());
 
         return ResponseEntity.ok().build();
     }
 
 
     @GetMapping("/verify-access-token")
-    public ResponseEntity<VerifyAccessTokenResponse> verifyAccessToken(
+    public ResponseEntity<AuthUserResponse> verifyAccessToken(
             @CookieValue(value = "access_token", required = false) String accessToken
     ) {
 
-        AuthUserServiceResponse authUserServiceResponse = authService.verifyAccessToken(accessToken);
+        AuthUserResponse authUserResponse = authService.verifyAccessToken(accessToken);
 
-        return ResponseEntity.ok(VerifyAccessTokenResponse.of(authUserServiceResponse.userId()));
+        return ResponseEntity.ok(authUserResponse);
     }
 
     @PostMapping("/refresh-access-token")
@@ -63,10 +62,10 @@ public class AuthController {
             HttpServletResponse response
     ) {
 
-        TokenServiceResponse tokenServiceResponse = authService.verifyRefreshToken(refreshToken);
+        TokenResponse tokenResponse = authService.verifyRefreshToken(refreshToken);
 
-        CookieUtils.addCookie(response, "access_token", tokenServiceResponse.accessToken(), tokenServiceResponse.accessTokenMaxAge());
-        CookieUtils.addCookie(response, "refresh_token", tokenServiceResponse.refreshToken(), tokenServiceResponse.refreshTokenMaxAge());
+        CookieUtils.addCookie(response, "access_token", tokenResponse.accessToken(), tokenResponse.accessTokenMaxAge());
+        CookieUtils.addCookie(response, "refresh_token", tokenResponse.refreshToken(), tokenResponse.refreshTokenMaxAge());
 
         return ResponseEntity.ok().build();
     }

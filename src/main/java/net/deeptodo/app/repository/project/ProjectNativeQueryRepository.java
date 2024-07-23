@@ -2,7 +2,6 @@ package net.deeptodo.app.repository.project;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import net.deeptodo.app.domain.Board;
@@ -10,7 +9,6 @@ import net.deeptodo.app.domain.Todo;
 import net.deeptodo.app.repository.project.dto.PartialUpdateProjectByIdAndUserIdDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +65,7 @@ public class ProjectNativeQueryRepository {
             List<String> nullKeys = dto.boards().entrySet().stream()
                     .filter(entry -> entry.getValue() == null)
                     .map(Map.Entry::getKey)
-                    .collect(Collectors.toList());
+                    .toList();
             Map<String, Board> notNullMap = dto.boards().entrySet().stream()
                     .filter(entry -> entry.getValue() != null)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -95,7 +93,7 @@ public class ProjectNativeQueryRepository {
             List<String> nullKeys = dto.todos().entrySet().stream()
                     .filter(entry -> entry.getValue() == null)
                     .map(Map.Entry::getKey)
-                    .collect(Collectors.toList());
+                    .toList();
             Map<String, Todo> notNullMap = dto.todos().entrySet().stream()
                     .filter(entry -> entry.getValue() != null)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -134,12 +132,10 @@ public class ProjectNativeQueryRepository {
 
 
         Query query = em.createNativeQuery(updateStr +
-                "SET " + setStrList.stream().collect(Collectors.joining(", ")) +
+                "SET " + String.join(", ", setStrList) +
                 whereStr
         );
-        keyWithparamList.forEach(keyWithParam -> {
-            query.setParameter(keyWithParam.key, keyWithParam.value);
-        });
+        keyWithparamList.forEach(keyWithParam -> query.setParameter(keyWithParam.key, keyWithParam.value));
 
 
         query.executeUpdate();

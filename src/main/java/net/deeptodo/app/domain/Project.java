@@ -31,7 +31,7 @@ public class Project {
     private String title;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    private List root;
+    private List<?> root;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Board> boards;
@@ -43,7 +43,7 @@ public class Project {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Project(Long id, User user, Integer version,String title, List root, Map<String, Board> boards, Map<String, Todo> todos, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Project(Long id, User user, Integer version,String title, List<?> root, Map<String, Board> boards, Map<String, Todo> todos, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.user = user;
         this.version = version;

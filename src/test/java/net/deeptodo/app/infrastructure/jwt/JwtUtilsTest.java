@@ -1,8 +1,6 @@
-package net.deeptodo.app.application.auth.infrastructure.jwt;
+package net.deeptodo.app.infrastructure.jwt;
 
 import net.deeptodo.app.application.auth.dto.JwtPayload;
-import net.deeptodo.app.application.auth.interfaces.TokenType;
-import net.deeptodo.app.config.ConfigJwt;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -10,8 +8,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 class JwtUtilsTest {
-    private ConfigJwt configJwt = new ConfigJwt("thisistoolargeaccesstokenkeyfordummykeydataforlocal", "thisistoolargeaccesstokenkeyfordummykeydataforlocal", 1, 12);
-    private JwtUtils jwtUtils = new JwtUtils(configJwt);
+    private JwtProperties jwtProperties = new JwtProperties("thisistoolargeaccesstokenkeyfordummykeydataforlocal", "thisistoolargeaccesstokenkeyfordummykeydataforlocal", 1, 12);
+    private JwtUtils jwtUtils = new JwtUtils(jwtProperties);
 
     @Test
     public void generateToken() {
