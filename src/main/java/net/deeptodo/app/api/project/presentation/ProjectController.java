@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import net.deeptodo.app.aop.auth.AuthUser;
 import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.api.project.application.ProjectService;
+import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
+import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,10 +79,18 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<Void> getProjectsByQuery(
-            @AuthUser AuthUserInfo authUserInfo
+    public ResponseEntity<GetProjectsByQueryResponse> getProjectsByQuery(
+            @AuthUser AuthUserInfo authUserInfo,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "recent") String order,
+            @RequestParam String search
     ) {
-        return ResponseEntity.ok().build();
+
+        GetProjectsByQueryResponse projectsByQuery = projectService.getProjectsByQuery(
+                authUserInfo,
+                GetProjectsByQueryDto.builder().page(page).order(order).search(search).build()
+        );
+        return ResponseEntity.ok(projectsByQuery);
     }
 
 }

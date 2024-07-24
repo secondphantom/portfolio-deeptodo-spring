@@ -23,24 +23,7 @@ public record GetProjectByIdResponse
 
 
     @Builder
-    public GetProjectByIdResponse(Long projectId,
-                                  Long userId,
-                                  Integer version,
-                                  String title,
-                                  List<?> root,
-                                  Map<String, RecordBoard> boards,
-                                  Map<String, RecordTodo> todos,
-                                  LocalDateTime createdAt,
-                                  LocalDateTime updatedAt) {
-        this.projectId = projectId;
-        this.userId = userId;
-        this.version = version;
-        this.title = title;
-        this.root = root;
-        this.boards = boards;
-        this.todos = todos;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    public GetProjectByIdResponse {
     }
 
     public static GetProjectByIdResponse fromProject(Project project) {

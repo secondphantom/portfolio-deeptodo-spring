@@ -2,6 +2,8 @@ package net.deeptodo.app.repository.project;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
+import net.deeptodo.app.api.project.dto.QueryProjectDto;
 import net.deeptodo.app.common.exception.CommonErrorCode;
 import net.deeptodo.app.common.exception.ErrorCode;
 import net.deeptodo.app.common.exception.InternalSeverErrorException;
@@ -9,6 +11,7 @@ import net.deeptodo.app.domain.Project;
 import net.deeptodo.app.repository.project.dto.PartialUpdateProjectByIdAndUserIdDto;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -59,6 +62,10 @@ public class ProjectRepository {
         } catch (JsonProcessingException e) {
             throw new InternalSeverErrorException(ErrorCode.getErrorCode(CommonErrorCode.INTERNAL));
         }
+    }
+
+    public List<QueryProjectDto> getProjectsByQuery(GetProjectsByQueryDto dto, Long userId) {
+        return projectQueryDslRepository.findProjectsByQuery(dto, userId);
     }
 
 }

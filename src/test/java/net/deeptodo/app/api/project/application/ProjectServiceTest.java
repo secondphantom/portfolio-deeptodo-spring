@@ -2,10 +2,12 @@ package net.deeptodo.app.api.project.application;
 
 import jakarta.persistence.EntityManager;
 import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
+import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
+import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import net.deeptodo.app.common.exception.ConflictException;
 import net.deeptodo.app.common.exception.NotFoundException;
 import net.deeptodo.app.common.exception.UnauthorizedException;
@@ -172,5 +174,25 @@ class ProjectServiceTest {
         assertThatThrownBy(
                 () -> projectService.getProjectVersionById(new AuthUserInfo(1L), 1L)
         ).isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    public void getProjectsByQuery_success() {
+        //given
+        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        userRepository.create(newUser);
+        Project newProject1 = Project.createNewProject(newUser);
+        projectRepository.create(newProject1);
+        Project newProject2 = Project.createNewProject(newUser);
+        projectRepository.create(newProject2);
+
+        //when
+        GetProjectsByQueryDto queryDto = new GetProjectsByQueryDto(1, "recent", null);
+        GetProjectsByQueryResponse response = projectService.getProjectsByQuery(new AuthUserInfo(newUser.getId()), queryDto);
+
+        //then
+        assertThat(response.projects()).hasSize(2);
+        assertThat(response.pagination().currentPage()).isEqualTo(1);
+        assertThat(response.pagination().pageSize()).isEqualTo(10);
     }
 }

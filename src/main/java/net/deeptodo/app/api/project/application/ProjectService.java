@@ -2,10 +2,15 @@ package net.deeptodo.app.api.project.application;
 
 import lombok.RequiredArgsConstructor;
 import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
+import net.deeptodo.app.api.project.ProjectDefaultValue;
+import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
+import net.deeptodo.app.api.project.dto.Pagination;
+import net.deeptodo.app.api.project.dto.QueryProjectDto;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
+import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import net.deeptodo.app.api.project.exception.ProjectErrorCode;
 import net.deeptodo.app.common.exception.ConflictException;
 import net.deeptodo.app.common.exception.NotFoundException;
@@ -17,6 +22,8 @@ import net.deeptodo.app.repository.project.dto.PartialUpdateProjectByIdAndUserId
 import net.deeptodo.app.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -100,4 +107,16 @@ public class ProjectService {
     }
 
 
+    public GetProjectsByQueryResponse getProjectsByQuery(AuthUserInfo authUserInfo, GetProjectsByQueryDto queryDto
+    ) {
+
+        List<QueryProjectDto> projects = projectRepository.getProjectsByQuery(queryDto, authUserInfo.userId());
+
+        return GetProjectsByQueryResponse.of(
+                projects,
+                Pagination.builder()
+                        .currentPage(queryDto.page())
+                        .pageSize(ProjectDefaultValue.PAGE_SIZE)
+                        .build());
+    }
 }
