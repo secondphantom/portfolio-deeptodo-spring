@@ -1,6 +1,9 @@
 package net.deeptodo.app.infrastructure.jwt;
 
-import net.deeptodo.app.application.auth.dto.JwtPayload;
+import net.deeptodo.app.api.auth.dto.JwtPayload;
+import net.deeptodo.app.api.auth.infrastructure.jwt.JwtProperties;
+import net.deeptodo.app.api.auth.infrastructure.jwt.JwtUtils;
+import net.deeptodo.app.api.auth.infrastructure.jwt.TokenType;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

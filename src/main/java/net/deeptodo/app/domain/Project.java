@@ -43,7 +43,7 @@ public class Project {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Project(Long id, User user, Integer version,String title, List<?> root, Map<String, Board> boards, Map<String, Todo> todos, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Project(Long id, User user, Integer version, String title, List<?> root, Map<String, Board> boards, Map<String, Todo> todos, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.user = user;
         this.version = version;
@@ -67,4 +67,6 @@ public class Project {
                 .todos(new HashMap<>())
                 .build();
     }
+
+    
 }

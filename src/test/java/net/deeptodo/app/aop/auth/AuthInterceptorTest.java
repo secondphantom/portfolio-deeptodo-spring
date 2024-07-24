@@ -2,8 +2,8 @@ package net.deeptodo.app.aop.auth;
 
 import jakarta.servlet.http.Cookie;
 import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
-import net.deeptodo.app.application.auth.AuthService;
-import net.deeptodo.app.application.auth.dto.response.AuthUserResponse;
+import net.deeptodo.app.api.auth.application.AuthService;
+import net.deeptodo.app.api.auth.dto.response.AuthUserResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
