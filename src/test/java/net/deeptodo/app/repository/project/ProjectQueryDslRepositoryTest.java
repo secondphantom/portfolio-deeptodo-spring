@@ -79,8 +79,6 @@ class ProjectQueryDslRepositoryTest {
                 .root(List.of())
                 .boards(Map.of())
                 .todos(Map.of())
-                .createdAt(LocalDateTime.now().minusDays(1))
-                .updatedAt(LocalDateTime.now().minusDays(1))
                 .build();
         em.persist(project1);
         em.flush();
@@ -91,8 +89,6 @@ class ProjectQueryDslRepositoryTest {
                 .root(List.of())
                 .boards(Map.of())
                 .todos(Map.of())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
         em.persist(project2);
         em.flush();

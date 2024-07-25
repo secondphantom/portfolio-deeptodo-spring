@@ -5,7 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,16 +12,16 @@ import java.util.Map;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "projects")
 @ToString
-public class Project {
+public class Project extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -39,11 +38,15 @@ public class Project {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Todo> todos;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
     @Builder
-    public Project(Long id, User user, Integer version, String title, List<?> root, Map<String, Board> boards, Map<String, Todo> todos, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Project(Long id,
+                   User user,
+                   Integer version,
+                   String title,
+                   List<?> root,
+                   Map<String, Board> boards,
+                   Map<String, Todo> todos
+    ) {
         this.id = id;
         this.user = user;
         this.version = version;
@@ -51,8 +54,6 @@ public class Project {
         this.root = root;
         this.boards = boards;
         this.todos = todos;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     static public Project createNewProject(
@@ -68,5 +69,5 @@ public class Project {
                 .build();
     }
 
-    
+
 }

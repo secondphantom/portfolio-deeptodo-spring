@@ -12,9 +12,9 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class User {
     private OauthServerType oauthServerType;
     private String oauthToken;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Subscription subscription;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -35,9 +35,6 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Payment> payments = new ArrayList<>();
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
     @Builder
     public User(Long id,
@@ -47,9 +44,7 @@ public class User {
                 String oauthServerId,
                 OauthServerType oauthServerType,
                 String oauthToken,
-                Subscription subscription,
-                LocalDateTime createdAt,
-                LocalDateTime updatedAt) {
+                Subscription subscription) {
         this.id = id;
         this.nickName = nickName;
         this.email = email;
@@ -58,8 +53,6 @@ public class User {
         this.oauthServerType = oauthServerType;
         this.oauthToken = oauthToken;
         this.subscription = subscription;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     static public User createNewUser(

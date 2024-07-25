@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class Board implements Serializable {
     private String title;

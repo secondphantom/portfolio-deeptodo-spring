@@ -1,6 +1,7 @@
 package net.deeptodo.app.api.project.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import net.deeptodo.app.aop.auth.AuthArgumentResolver;
 import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.api.RestDocsIntegration;
@@ -13,10 +14,9 @@ import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import net.deeptodo.app.common.config.JacksonConfig;
-import net.deeptodo.app.domain.Board;
-import net.deeptodo.app.domain.Project;
-import net.deeptodo.app.domain.Todo;
-import net.deeptodo.app.domain.User;
+import net.deeptodo.app.domain.*;
+import net.deeptodo.app.repository.project.ProjectRepository;
+import net.deeptodo.app.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 
-
+@Transactional
 class ProjectControllerTest extends RestDocsIntegration {
 
     private final String URL_PATH = "/api/v1/projects";
@@ -50,6 +51,14 @@ class ProjectControllerTest extends RestDocsIntegration {
 
     @Autowired
     private JacksonConfig jacksonConfig;
+
+    @Autowired
+    private EntityManager em;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     public void beforeEach() throws Exception {
@@ -76,8 +85,16 @@ class ProjectControllerTest extends RestDocsIntegration {
                 .andDo(restDocs.document());
     }
 
-    private Project createProject(Long projectId) {
-        User user = User.builder().id(1L).build();
+    private User createUser () {
+        User user = User.createNewUser(
+                "nickName", "email", "oathServerId", OauthServerType.GOOGLE
+        );
+        userRepository.create(user);
+        em.flush();
+        return userRepository.getById(user.getId()).get();
+    }
+
+    private Project createProject(Long projectId,User user) {
 
         Map<String, Board> boards = new HashMap<>();
         Board board1 = createBoard("board title 1");
@@ -93,7 +110,7 @@ class ProjectControllerTest extends RestDocsIntegration {
 
         List root = List.of(List.of("boardId1", List.of("todoId1", "todoId2")), List.of("boardId1"));
 
-        return Project.builder()
+        Project project = Project.builder()
                 .id(projectId)
                 .user(user)
                 .version(0)
@@ -101,9 +118,9 @@ class ProjectControllerTest extends RestDocsIntegration {
                 .root(root)
                 .boards(boards)
                 .todos(todos)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
+        projectRepository.create(project);
+        return projectRepository.getById(project.getId()).get();
     }
 
     private Board createBoard(String title) {
@@ -128,10 +145,11 @@ class ProjectControllerTest extends RestDocsIntegration {
     @Test
     public void getProjectById_success() throws Exception {
         //given
-        Project project = createProject(1L);
+        User user = createUser();
+        Project project = createProject(1L,user);
         GetProjectByIdResponse getProjectByIdResponse = GetProjectByIdResponse.fromProject(project);
 
-        given(projectService.getProjectById(any(), any())).willReturn(getProjectByIdResponse);
+        given(projectService.getProjectById(any(),any())).willReturn(getProjectByIdResponse);
 
         //when & then
         mockMvc.perform(MockMvcRequestBuilders.get(URL_PATH + "/1"))
@@ -235,7 +253,7 @@ class ProjectControllerTest extends RestDocsIntegration {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.pagination.pageSize").value(10))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.pagination.currentPage").value(1))
                 .andDo(restDocs.document());
-        
+
     }
 
 }

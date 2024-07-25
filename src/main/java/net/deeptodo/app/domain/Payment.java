@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "payments")
-public class Payment {
+public class Payment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,8 +25,5 @@ public class Payment {
     private LocalDateTime paymentDate;
     private Double amount;
     private String paymentStatus;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
 }

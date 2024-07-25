@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "subscriptions")
-public class Subscription {
+public class Subscription extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +26,4 @@ public class Subscription {
     private LocalDateTime endDate;
     private String status;
     private Integer billingCycleDays;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

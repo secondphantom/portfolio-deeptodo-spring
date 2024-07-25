@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "subscriptionplans")
-public class SubscriptionPlan {
+public class SubscriptionPlan extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +21,4 @@ public class SubscriptionPlan {
     private Integer durationDays;
     private Integer maxProjectCount;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }
