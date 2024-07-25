@@ -1,6 +1,7 @@
 package net.deeptodo.app.api.project.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import net.deeptodo.app.domain.Board;
 import net.deeptodo.app.domain.Todo;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public record PartialUpdateProjectRequest(
-        @NotEmpty(message = "Need version field")
+        @NotNull(message = "Need version field")
         Integer version,
         String title,
         List<?> root,

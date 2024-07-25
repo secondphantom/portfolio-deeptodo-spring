@@ -11,25 +11,25 @@ import java.util.Objects;
 @ToString
 public class Todo implements Serializable {
 
-    private boolean done;
-    private String title;
-    private boolean expand;
     private String todoId;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private String title;
+    private boolean done;
+    private boolean expand;
     private boolean enableCalendar;
     private boolean syncGoogleCalendar;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 
     @Builder
     public Todo(boolean done, String title, boolean expand, String todoId, LocalDateTime startDate, LocalDateTime endDate, boolean enableCalendar, boolean syncGoogleCalendar) {
-        this.done = done;
-        this.title = title;
-        this.expand = expand;
         this.todoId = todoId;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.title = title;
+        this.done = done;
+        this.expand = expand;
         this.enableCalendar = enableCalendar;
         this.syncGoogleCalendar = syncGoogleCalendar;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     @Override

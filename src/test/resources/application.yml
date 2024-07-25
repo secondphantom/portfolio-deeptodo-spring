@@ -13,8 +13,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-
-
+        jdbc:
+          time_zone: UTC
 
 jwt:
   access-key: thisistoolargeaccesstokenkeyfordummykeydataforlocal

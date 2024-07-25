@@ -1,6 +1,7 @@
 package net.deeptodo.app.aop.auth;
 
 import jakarta.servlet.http.Cookie;
+import net.deeptodo.app.aop.TestController;
 import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.api.auth.application.AuthService;
 import net.deeptodo.app.api.auth.dto.response.AuthUserResponse;
@@ -40,7 +41,7 @@ class AuthInterceptorTest {
         );
         //when & then
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/v1/projects")
+                        MockMvcRequestBuilders.get(TestController.getPath)
                                 .cookie(new Cookie("access_token", "token")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -75,7 +76,7 @@ class AuthInterceptorTest {
         );
         //when & then
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/v1/projects"))
+                        MockMvcRequestBuilders.get(TestController.getPath))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 

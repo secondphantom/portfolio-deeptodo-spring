@@ -6,13 +6,17 @@ import net.deeptodo.app.api.auth.infrastructure.jwt.JwtUtils;
 import net.deeptodo.app.api.auth.infrastructure.jwt.TokenType;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@SpringBootTest
 class JwtUtilsTest {
-    private JwtProperties jwtProperties = new JwtProperties("thisistoolargeaccesstokenkeyfordummykeydataforlocal", "thisistoolargeaccesstokenkeyfordummykeydataforlocal", 1, 12);
-    private JwtUtils jwtUtils = new JwtUtils(jwtProperties);
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Test
     public void generateToken() {

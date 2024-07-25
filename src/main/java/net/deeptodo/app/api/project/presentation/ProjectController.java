@@ -45,15 +45,14 @@ public class ProjectController {
     }
 
     @PatchMapping("/{projectId}")
-    public ResponseEntity<Void> updateProjectById(
+    public ResponseEntity<GetProjectVersionByIdResponse> updateProjectById(
             @RequestBody @Valid PartialUpdateProjectRequest request,
             @AuthUser AuthUserInfo authUserInfo,
             @PathVariable Long projectId
     ) {
+        GetProjectVersionByIdResponse getProjectVersionByIdResponse = projectService.updateProjectById(authUserInfo, projectId, request);
 
-        projectService.updateProjectById(authUserInfo, projectId, request);
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(getProjectVersionByIdResponse);
     }
 
     @DeleteMapping("/{projectId}")
@@ -64,7 +63,7 @@ public class ProjectController {
 
         projectService.deleteProjectById(authUserInfo, projectId);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{projectId}/version")
@@ -83,7 +82,7 @@ public class ProjectController {
             @AuthUser AuthUserInfo authUserInfo,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "recent") String order,
-            @RequestParam String search
+            @RequestParam(required = false) String search
     ) {
 
         GetProjectsByQueryResponse projectsByQuery = projectService.getProjectsByQuery(

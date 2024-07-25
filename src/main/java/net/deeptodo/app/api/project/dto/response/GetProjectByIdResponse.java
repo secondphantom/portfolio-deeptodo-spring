@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 public record GetProjectByIdResponse
         (
                 Long projectId,
-                Long userId,
                 Integer version,
                 String title,
                 List<?> root,
@@ -29,7 +28,6 @@ public record GetProjectByIdResponse
     public static GetProjectByIdResponse fromProject(Project project) {
         return GetProjectByIdResponse.builder()
                 .projectId(project.getId())
-                .userId(project.getUser().getId())
                 .version(project.getVersion())
                 .title(project.getTitle())
                 .root(project.getRoot())
@@ -44,37 +42,43 @@ public record GetProjectByIdResponse
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
                                 entry -> new RecordTodo(
-                                        entry.getValue().isDone(),
-                                        entry.getValue().getTitle(),
-                                        entry.getValue().isExpand(),
                                         entry.getValue().getTodoId(),
-                                        entry.getValue().getStartDate(),
-                                        entry.getValue().getEndDate(),
+                                        entry.getValue().getTitle(),
+                                        entry.getValue().isDone(),
+                                        entry.getValue().isExpand(),
                                         entry.getValue().isEnableCalendar(),
-                                        entry.getValue().isSyncGoogleCalendar()
+                                        entry.getValue().isSyncGoogleCalendar(),
+                                        entry.getValue().getStartDate(),
+                                        entry.getValue().getEndDate()
                                 )
                         )))
+                .createdAt(project.getCreatedAt())
+                .updatedAt(project.getUpdatedAt())
                 .build();
     }
 
-    private record RecordBoard(
+    public record RecordBoard(
             String title
     ) {
+        @Builder
+        public RecordBoard {
+        }
     }
 
-    private record RecordTodo(
-            boolean done,
-            String title,
-            boolean expand,
+    public record RecordTodo(
             String todoId,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
+            String title,
+            boolean done,
+            boolean expand,
             boolean enableCalendar,
-            boolean syncGoogleCalendar
+            boolean syncGoogleCalendar,
+            LocalDateTime startDate,
+            LocalDateTime endDate
     ) {
+        @Builder
+        public RecordTodo {
+        }
     }
-
-
 }
 
 

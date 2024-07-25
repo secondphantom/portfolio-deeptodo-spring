@@ -62,7 +62,7 @@ public class ProjectService {
         projectRepository.deleteByIdAndUserId(id, authUserInfo.userId());
     }
 
-    public void updateProjectById(
+    public GetProjectVersionByIdResponse updateProjectById(
             AuthUserInfo authUserInfo,
             Long projectId,
             PartialUpdateProjectRequest partialUpdateProjectRequest
@@ -81,6 +81,8 @@ public class ProjectService {
                 .build();
 
         projectRepository.partialUpdateByIdAndUserId(dto);
+
+        return GetProjectVersionByIdResponse.of(dto.projectId(), dto.version());
 
     }
 
