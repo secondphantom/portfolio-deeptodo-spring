@@ -42,7 +42,7 @@ class ProjectServiceTest {
     @Test
     public void createProject_success() {
         //given
-        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        User newUser =   User.builder().build();
         Long userId = userRepository.create(newUser);
 
         //when
@@ -63,7 +63,7 @@ class ProjectServiceTest {
     @Test
     public void getProjectById_success() {
         //given
-        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        User newUser = User.builder().build();
         userRepository.create(newUser);
         Project newProject = Project.createNewProject(newUser);
         projectRepository.create(newProject);
@@ -86,7 +86,7 @@ class ProjectServiceTest {
     @Test
     public void deleteProjectById_success() {
         //given
-        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        User newUser = User.builder().build();
         userRepository.create(newUser);
         Project newProject = Project.createNewProject(newUser);
         projectRepository.create(newProject);
@@ -102,7 +102,7 @@ class ProjectServiceTest {
     @Test
     public void updateProjectById_success() {
         //given
-        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        User newUser = User.builder().build();
         userRepository.create(newUser);
         Project newProject = Project.builder()
                 .user(newUser)
@@ -133,7 +133,7 @@ class ProjectServiceTest {
     @Test
     public void updateProjectById_fail_version_conflict() {
         //given
-        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        User newUser = User.builder().build();
         userRepository.create(newUser);
         Project newProject = Project.builder()
                 .user(newUser)
@@ -155,7 +155,7 @@ class ProjectServiceTest {
     @Test
     public void getProjectVersionById_success() {
         //given
-        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        User newUser = User.builder().build();
         userRepository.create(newUser);
         Project newProject = Project.createNewProject(newUser);
         projectRepository.create(newProject);
@@ -179,7 +179,7 @@ class ProjectServiceTest {
     @Test
     public void getProjectsByQuery_success() {
         //given
-        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        User newUser =User.builder().build();
         userRepository.create(newUser);
         Project newProject1 = Project.createNewProject(newUser);
         projectRepository.create(newProject1);

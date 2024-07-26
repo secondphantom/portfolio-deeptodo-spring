@@ -59,15 +59,33 @@ public class User extends BaseTimeEntity {
             final String nickName,
             final String email,
             final String oauthServerId,
-            final OauthServerType oauthServerType
+            final OauthServerType oauthServerType,
+            final SubscriptionPlan freePlan
     ) {
-
-        return User.builder()
+        User user = User.builder()
                 .nickName(nickName)
                 .email(email)
                 .oauthServerId(oauthServerId)
                 .oauthServerType(oauthServerType)
                 .build();
+
+        Subscription subscription = Subscription.builder()
+                .user(user)
+                .plan(freePlan)
+                .status(SubscriptionStatus.ACTIVE)
+                .startDate(LocalDateTime.now())
+                .expiredDate(LocalDateTime.now().plusDays(freePlan.getDurationDays()))
+                .build();
+
+        user.subscription = subscription;
+        return user;
     }
 
+    public boolean canCreateProject(Integer currentProjectCount) {
+        Integer maxProjectCount = subscription.getPlan().getMaxProjectCount();
+        if (currentProjectCount > maxProjectCount) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -38,15 +38,10 @@ public class Project extends BaseTimeEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Todo> todos;
 
+    private boolean enabled;
+
     @Builder
-    public Project(Long id,
-                   User user,
-                   Integer version,
-                   String title,
-                   List<?> root,
-                   Map<String, Board> boards,
-                   Map<String, Todo> todos
-    ) {
+    public Project(Long id, User user, Integer version, String title, List<?> root, Map<String, Board> boards, Map<String, Todo> todos, boolean enabled) {
         this.id = id;
         this.user = user;
         this.version = version;
@@ -54,6 +49,7 @@ public class Project extends BaseTimeEntity {
         this.root = root;
         this.boards = boards;
         this.todos = todos;
+        this.enabled = enabled;
     }
 
     static public Project createNewProject(
@@ -66,6 +62,7 @@ public class Project extends BaseTimeEntity {
                 .root(new ArrayList<>())
                 .boards(new HashMap<>())
                 .todos(new HashMap<>())
+                .enabled(true)
                 .build();
     }
 

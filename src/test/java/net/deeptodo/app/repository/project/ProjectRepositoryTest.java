@@ -34,12 +34,7 @@ class ProjectRepositoryTest {
     @Test
     public void testJsonbFields() throws Exception {
         // given
-        User user = User.createNewUser(
-                "nickName",
-                "email",
-                "oauthServerId",
-                OauthServerType.GOOGLE
-        ); // Assuming User entity is properly defined
+        User user = User.builder().build(); // Assuming User entity is properly defined
         userRepository.create(user);
 
         Map<String, Board> boards = new HashMap<>();

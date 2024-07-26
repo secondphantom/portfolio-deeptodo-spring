@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,7 +29,7 @@ class ProjectQueryDslRepositoryTest {
     @Test
     public void findVersionById() {
         //given
-        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        User newUser = User.builder().build();
         em.persist(newUser);
         Project newProject = Project.createNewProject(newUser);
         em.persist(newProject);
@@ -47,7 +46,7 @@ class ProjectQueryDslRepositoryTest {
     @Test
     public void findIdByIdAndUserId() {
         //given
-        User newUser = User.createNewUser("nickName", "email", "oauthServerId", OauthServerType.GOOGLE);
+        User newUser = User.builder().build();
         em.persist(newUser);
         Project newProject = Project.createNewProject(newUser);
         em.persist(newProject);
@@ -65,12 +64,7 @@ class ProjectQueryDslRepositoryTest {
     @Test
     public void findProjectsByQuery() {
         //given
-        User newUser = User.createNewUser(
-                "nickname",
-                "email",
-                "oauthServiceId",
-                OauthServerType.GOOGLE
-        );
+        User newUser = User.builder().build();
         em.persist(newUser);
         Project project1 = Project.builder()
                 .user(newUser)

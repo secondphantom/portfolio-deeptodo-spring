@@ -15,7 +15,10 @@ import net.deeptodo.app.common.exception.ErrorCode;
 import net.deeptodo.app.common.exception.InternalSeverErrorException;
 import net.deeptodo.app.common.exception.UnauthorizedException;
 import net.deeptodo.app.domain.OauthServerType;
+import net.deeptodo.app.domain.PlanType;
+import net.deeptodo.app.domain.SubscriptionPlan;
 import net.deeptodo.app.domain.User;
+import net.deeptodo.app.repository.subscription.SubscriptionPlanRepository;
 import net.deeptodo.app.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,7 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
     private final ProvidersUtils googleProviderUtils;
     private final JwtUtils jwtUtils;
 
@@ -65,12 +69,15 @@ public class AuthService {
             return findUser.get().getId();
         }
 
+        SubscriptionPlan freePlan = subscriptionPlanRepository.getByType(PlanType.FREE);
+
         User newUser = User.createNewUser(
                 oauthUser.name(),
                 oauthUser.email(),
                 oauthUser.userId(),
-                OauthServerType.GOOGLE);
-
+                OauthServerType.GOOGLE,
+                freePlan
+        );
 
         return userRepository.create(newUser);
     }

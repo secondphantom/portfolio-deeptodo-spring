@@ -86,9 +86,7 @@ class ProjectControllerTest extends RestDocsIntegration {
     }
 
     private User createUser () {
-        User user = User.createNewUser(
-                "nickName", "email", "oathServerId", OauthServerType.GOOGLE
-        );
+        User user = User.builder().build();;
         userRepository.create(user);
         em.flush();
         return userRepository.getById(user.getId()).get();

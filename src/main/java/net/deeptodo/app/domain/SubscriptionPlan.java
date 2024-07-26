@@ -2,23 +2,35 @@ package net.deeptodo.app.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "subscriptionplans")
 public class SubscriptionPlan extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private PlanType type;
     private String description;
     private Double price;
     private Integer durationDays;
     private Integer maxProjectCount;
+    private Integer maxTodoCount;
 
+    @Builder
+    public SubscriptionPlan(Long id, PlanType type, String description, Double price, Integer durationDays, Integer maxProjectCount, Integer maxTodoCount) {
+        this.id = id;
+        this.type = type;
+        this.description = description;
+        this.price = price;
+        this.durationDays = durationDays;
+        this.maxProjectCount = maxProjectCount;
+        this.maxTodoCount = maxTodoCount;
+    }
 }

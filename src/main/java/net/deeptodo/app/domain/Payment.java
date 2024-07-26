@@ -22,8 +22,23 @@ public class Payment extends BaseTimeEntity {
     @JoinColumn(name = "subscription_id", nullable = false)
     private Subscription subscription;
 
-    private LocalDateTime paymentDate;
     private Double amount;
-    private String paymentStatus;
 
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
+    private String transactionId;
+    private LocalDateTime paymentDate;
+
+    public Payment(Long id, User user, Subscription subscription, Double amount, PaymentMethod paymentMethod, PaymentStatus status, String transactionId, LocalDateTime paymentDate) {
+        this.id = id;
+        this.user = user;
+        this.subscription = subscription;
+        this.amount = amount;
+        this.paymentMethod = paymentMethod;
+        this.status = status;
+        this.transactionId = transactionId;
+        this.paymentDate = paymentDate;
+    }
 }

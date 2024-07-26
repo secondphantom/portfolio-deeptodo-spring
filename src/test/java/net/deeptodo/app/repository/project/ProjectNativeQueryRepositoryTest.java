@@ -1,7 +1,10 @@
 package net.deeptodo.app.repository.project;
 
 import jakarta.persistence.EntityManager;
-import net.deeptodo.app.domain.*;
+import net.deeptodo.app.domain.Board;
+import net.deeptodo.app.domain.Project;
+import net.deeptodo.app.domain.Todo;
+import net.deeptodo.app.domain.User;
 import net.deeptodo.app.repository.project.dto.PartialUpdateProjectByIdAndUserIdDto;
 import net.deeptodo.app.repository.user.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -34,12 +37,7 @@ class ProjectNativeQueryRepositoryTest {
     @Test
     public void partialUpdateByIdAndUserId_success_not_need_update() throws Exception {
         //given
-        User newUser = User.createNewUser(
-                "nickName",
-                "email",
-                "oauthServerId",
-                OauthServerType.GOOGLE
-        );
+        User newUser = User.builder().build();
         userRepository.create(newUser);
 
         Project newProject = Project.builder()
@@ -90,12 +88,7 @@ class ProjectNativeQueryRepositoryTest {
         todos.put("todo2", todo);
         todos.put("todo3", todo);
 
-        User newUser = User.createNewUser(
-                "nickName",
-                "email",
-                "oauthServerId",
-                OauthServerType.GOOGLE
-        );
+        User newUser = User.builder().build();
         userRepository.create(newUser);
 
         Project newProject = Project.builder()

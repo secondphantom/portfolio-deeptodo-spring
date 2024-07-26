@@ -1,5 +1,6 @@
 package net.deeptodo.app.api.auth.application;
 
+import jakarta.persistence.EntityManager;
 import net.deeptodo.app.api.auth.application.interfaces.ProvidersUtils;
 import net.deeptodo.app.api.auth.dto.JwtPayload;
 import net.deeptodo.app.api.auth.dto.OauthUser;
@@ -9,7 +10,10 @@ import net.deeptodo.app.api.auth.dto.response.TokenResponse;
 import net.deeptodo.app.api.auth.infrastructure.jwt.JwtUtils;
 import net.deeptodo.app.api.auth.infrastructure.jwt.TokenType;
 import net.deeptodo.app.common.exception.UnauthorizedException;
+import net.deeptodo.app.domain.PlanType;
+import net.deeptodo.app.domain.SubscriptionPlan;
 import net.deeptodo.app.domain.User;
+import net.deeptodo.app.repository.subscription.SubscriptionPlanRepository;
 import net.deeptodo.app.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,12 +25,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 @Transactional
 class AuthServiceTest {
 
+    @Autowired
+    private EntityManager em;
     @MockBean
     private ProvidersUtils googleProviderUtils;
     @Autowired
@@ -56,11 +63,18 @@ class AuthServiceTest {
     @Test
     public void loginOauthGoogleCallback_success() throws Exception {
         //given
+        SubscriptionPlan newPlan = SubscriptionPlan.builder().durationDays(1000).id(1L).type(PlanType.FREE).build();
+
+        em.persist(newPlan);
+        em.flush();
+        em.clear();
+
         OauthUser oauthUser = new OauthUser("userId", "name", "email");
 
         given(googleProviderUtils.getOauthUser("code")).willReturn(
                 Optional.of(oauthUser)
         );
+
         //when
         TokenResponse tokenResponse = authService.loginOauthGoogleCallback("code");
 
