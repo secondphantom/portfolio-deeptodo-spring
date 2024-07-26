@@ -3,9 +3,9 @@ package net.deeptodo.app.repository.project;
 import jakarta.persistence.EntityManager;
 import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
 import net.deeptodo.app.api.project.dto.QueryProjectDto;
-import net.deeptodo.app.domain.OauthServerType;
 import net.deeptodo.app.domain.Project;
 import net.deeptodo.app.domain.User;
+import net.deeptodo.app.repository.project.dto.ProjectIdAndVersionAndEnabledDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -70,6 +70,7 @@ class ProjectQueryDslRepositoryTest {
                 .user(newUser)
                 .title("first")
                 .version(1)
+                .enabled(true)
                 .root(List.of())
                 .boards(Map.of())
                 .todos(Map.of())
@@ -80,6 +81,7 @@ class ProjectQueryDslRepositoryTest {
                 .user(newUser)
                 .title("second")
                 .version(1)
+                .enabled(false)
                 .root(List.of())
                 .boards(Map.of())
                 .todos(Map.of())
@@ -113,5 +115,24 @@ class ProjectQueryDslRepositoryTest {
         em.clear();
     }
 
+    @Test
+    public void findVersionAndEnabledByIdAndUserId() throws Exception {
+        //given
+        User newUser = User.builder().build();
+        em.persist(newUser);
+        Project newProject = Project.createNewProject(newUser);
+        em.persist(newProject);
+
+        em.flush();
+        em.clear();
+        //when
+        ProjectIdAndVersionAndEnabledDto dto = projectQueryDslRepository.findVersionAndEnabledByIdAndUserId(newProject.getId(), newUser.getId()).get();
+
+        //then
+        assertThat(dto).isNotNull();
+        assertThat(dto.id()).isEqualTo(newProject.getId());
+        assertThat(dto.version()).isEqualTo(newProject.getVersion());
+        assertThat(dto.enabled()).isEqualTo(newProject.isEnabled());
+    }
 
 }

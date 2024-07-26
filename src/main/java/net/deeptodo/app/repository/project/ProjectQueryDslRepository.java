@@ -9,6 +9,7 @@ import net.deeptodo.app.api.project.ProjectDefaultValue;
 import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
 import net.deeptodo.app.api.project.dto.QueryProjectDto;
 import net.deeptodo.app.api.project.dto.request.QueryOrder;
+import net.deeptodo.app.repository.project.dto.ProjectIdAndVersionAndEnabledDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,6 +42,17 @@ public class ProjectQueryDslRepository {
         return Optional.ofNullable(version);
     }
 
+    public Optional<ProjectIdAndVersionAndEnabledDto> findVersionAndEnabledByIdAndUserId(Long projectId, Long userId) {
+        return Optional.ofNullable(
+                queryFactory.select(
+                                Projections.constructor(ProjectIdAndVersionAndEnabledDto.class,
+                                        project.id, project.version, project.enabled)
+                        )
+                        .from(project)
+                        .where(project.id.eq(projectId), project.user.id.eq(userId))
+                        .fetchOne());
+    }
+
     public Optional<Long> findIdById(Long projectId) {
         Long id = queryFactory.select(project.id)
                 .from(project)
@@ -66,8 +78,10 @@ public class ProjectQueryDslRepository {
         return queryFactory.select(Projections.constructor(QueryProjectDto.class,
                         project.id,
                         project.title,
+                        project.enabled,
                         project.createdAt,
-                        project.updatedAt))
+                        project.updatedAt
+                        ))
                 .from(project)
                 .where(searchPredicate, project.user.id.eq(userId))
                 .orderBy(orderSpecifier)

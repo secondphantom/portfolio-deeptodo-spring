@@ -20,6 +20,7 @@ import net.deeptodo.app.domain.Project;
 import net.deeptodo.app.domain.User;
 import net.deeptodo.app.repository.project.ProjectRepository;
 import net.deeptodo.app.repository.project.dto.PartialUpdateProjectByIdAndUserIdDto;
+import net.deeptodo.app.repository.project.dto.ProjectIdAndVersionAndEnabledDto;
 import net.deeptodo.app.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,16 +94,19 @@ public class ProjectService {
     }
 
     private Integer getNextProjectVersion(Long projectId, Long userId, Integer currentVersion) {
-        Integer dbVersion = projectRepository.getVersionByIdAndUserId(projectId, userId)
+        ProjectIdAndVersionAndEnabledDto dto = projectRepository.getVersionAndEnabledByIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.getErrorCode(ProjectErrorCode.NOT_FOUND_PROJECT)));
 
-        if (!currentVersion.equals(dbVersion)) {
+        if (!currentVersion.equals(dto.version())) {
             throw new ConflictException(ProjectErrorCode.getErrorCode(ProjectErrorCode.CONFLICT_PROJECT_VERSION));
+        }
+        if(dto.enabled() == false) {
+            throw new ForbiddenException(ProjectErrorCode.getErrorCode(ProjectErrorCode.FORBIDDEN_CREATE_PROJECT));
         }
 
         final int VERSION_RANGE = 100;
 
-        Integer nextVersion = (dbVersion + 1) % VERSION_RANGE;
+        Integer nextVersion = (dto.version() + 1) % VERSION_RANGE;
 
         return nextVersion;
     }

@@ -150,6 +150,7 @@ class ProjectServiceTest {
         Project newProject = Project.builder()
                 .user(newUser)
                 .version(99)
+                .enabled(true)
                 .build();
         projectRepository.create(newProject);
 
@@ -194,6 +195,32 @@ class ProjectServiceTest {
                         dto)
         ).isInstanceOf(ConflictException.class);
     }
+
+    @Test
+    public void updateProjectById_fail_not_enabled_project() {
+        //given
+        User newUser = User.builder().build();
+        userRepository.create(newUser);
+        Project newProject = Project.builder()
+                .user(newUser)
+                .version(99)
+                .enabled(false)
+                .build();
+        projectRepository.create(newProject);
+
+        PartialUpdateProjectRequest dto = PartialUpdateProjectRequest
+                .builder().version(99).build();
+
+        //when & then
+        assertThatThrownBy(
+                () -> projectService.updateProjectById(
+                        new AuthUserInfo(newUser.getId()),
+                        newProject.getId(),
+                        dto)
+        ).isInstanceOf(ForbiddenException.class);
+    }
+
+
 
     @Test
     public void getProjectVersionById_success() {

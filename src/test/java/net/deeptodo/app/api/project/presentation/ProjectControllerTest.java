@@ -235,7 +235,7 @@ class ProjectControllerTest extends RestDocsIntegration {
         //given
         GetProjectsByQueryResponse response = GetProjectsByQueryResponse.of(
                 List.of(
-                        new QueryProjectDto(1L, "title", LocalDateTime.now(), LocalDateTime.now())
+                        new QueryProjectDto(1L, "title", true, LocalDateTime.now(), LocalDateTime.now() )
                 ),
                 Pagination.builder().pageSize(10).currentPage(1).build()
         );

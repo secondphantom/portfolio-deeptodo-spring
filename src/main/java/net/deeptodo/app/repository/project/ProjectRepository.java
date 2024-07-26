@@ -9,6 +9,7 @@ import net.deeptodo.app.common.exception.ErrorCode;
 import net.deeptodo.app.common.exception.InternalSeverErrorException;
 import net.deeptodo.app.domain.Project;
 import net.deeptodo.app.repository.project.dto.PartialUpdateProjectByIdAndUserIdDto;
+import net.deeptodo.app.repository.project.dto.ProjectIdAndVersionAndEnabledDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -44,6 +45,10 @@ public class ProjectRepository {
 
     public Optional<Integer> getVersionByIdAndUserId(Long id, Long userid) {
         return projectQueryDslRepository.findVersionByIdAndUserId(id, userid);
+    }
+
+    public Optional<ProjectIdAndVersionAndEnabledDto> getVersionAndEnabledByIdAndUserId(Long id, Long userid) {
+        return projectQueryDslRepository.findVersionAndEnabledByIdAndUserId(id, userid);
     }
 
     public Optional<Long> getIdById(Long id) {
