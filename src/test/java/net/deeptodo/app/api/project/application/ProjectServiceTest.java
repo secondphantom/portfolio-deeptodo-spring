@@ -6,7 +6,7 @@ import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
-import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
+import net.deeptodo.app.api.project.dto.response.GetProjectVersionAndEnabledByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import net.deeptodo.app.common.exception.ConflictException;
 import net.deeptodo.app.common.exception.ForbiddenException;
@@ -116,6 +116,7 @@ class ProjectServiceTest {
 
         //then
         assertThat(response.projectId()).isEqualTo(newProject.getId());
+        assertThat(response.enabled()).isEqualTo(newProject.isEnabled());
     }
 
     @Test
@@ -221,9 +222,8 @@ class ProjectServiceTest {
     }
 
 
-
     @Test
-    public void getProjectVersionById_success() {
+    public void getProjectVersionAndEnabledById_success() {
         //given
         User newUser = User.builder().build();
         userRepository.create(newUser);
@@ -231,7 +231,7 @@ class ProjectServiceTest {
         projectRepository.create(newProject);
 
         //when
-        GetProjectVersionByIdResponse response = projectService.getProjectVersionById(new AuthUserInfo(newUser.getId()), newProject.getId());
+        GetProjectVersionAndEnabledByIdResponse response = projectService.getProjectVersionAndEnabledById(new AuthUserInfo(newUser.getId()), newProject.getId());
 
         //then
         assertThat(response.projectId()).isEqualTo(newProject.getId());
@@ -239,10 +239,10 @@ class ProjectServiceTest {
     }
 
     @Test
-    public void getProjectVersionById_fail_not_found() {
+    public void getProjectVersionAndEnabledById_fail_not_found() {
         //when & then
         assertThatThrownBy(
-                () -> projectService.getProjectVersionById(new AuthUserInfo(1L), 1L)
+                () -> projectService.getProjectVersionAndEnabledById(new AuthUserInfo(1L), 1L)
         ).isInstanceOf(NotFoundException.class);
     }
 

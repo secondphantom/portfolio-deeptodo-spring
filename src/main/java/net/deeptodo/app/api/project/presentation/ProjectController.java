@@ -9,7 +9,7 @@ import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
-import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
+import net.deeptodo.app.api.project.dto.response.GetProjectVersionAndEnabledByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,14 +45,14 @@ public class ProjectController {
     }
 
     @PatchMapping("/{projectId}")
-    public ResponseEntity<GetProjectVersionByIdResponse> updateProjectById(
+    public ResponseEntity<GetProjectVersionAndEnabledByIdResponse> updateProjectById(
             @RequestBody @Valid PartialUpdateProjectRequest request,
             @AuthUser AuthUserInfo authUserInfo,
             @PathVariable Long projectId
     ) {
-        GetProjectVersionByIdResponse getProjectVersionByIdResponse = projectService.updateProjectById(authUserInfo, projectId, request);
+        GetProjectVersionAndEnabledByIdResponse getProjectVersionAndEnabledByIdResponse = projectService.updateProjectById(authUserInfo, projectId, request);
 
-        return ResponseEntity.ok(getProjectVersionByIdResponse);
+        return ResponseEntity.ok(getProjectVersionAndEnabledByIdResponse);
     }
 
     @DeleteMapping("/{projectId}")
@@ -66,13 +66,13 @@ public class ProjectController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{projectId}/version")
-    public ResponseEntity<GetProjectVersionByIdResponse> getProjectVersionById(
+    @GetMapping("/{projectId}/version-enabled")
+    public ResponseEntity<GetProjectVersionAndEnabledByIdResponse> getProjectVersionAndEnabledById(
             @AuthUser AuthUserInfo authUserInfo,
             @PathVariable Long projectId
     ) {
 
-        GetProjectVersionByIdResponse projectVersionById = projectService.getProjectVersionById(authUserInfo, projectId);
+        GetProjectVersionAndEnabledByIdResponse projectVersionById = projectService.getProjectVersionAndEnabledById(authUserInfo, projectId);
 
         return ResponseEntity.ok(projectVersionById);
     }

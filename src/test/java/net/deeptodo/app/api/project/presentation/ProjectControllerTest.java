@@ -11,7 +11,7 @@ import net.deeptodo.app.api.project.dto.QueryProjectDto;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
-import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
+import net.deeptodo.app.api.project.dto.response.GetProjectVersionAndEnabledByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import net.deeptodo.app.common.config.JacksonConfig;
 import net.deeptodo.app.domain.Board;
@@ -171,6 +171,7 @@ class ProjectControllerTest extends RestDocsIntegration {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.endDate").value(getProjectByIdResponse.todos().get("todoId1").endDate().format(JacksonConfig.dateTimeFormatter)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.enableCalendar").value(getProjectByIdResponse.todos().get("todoId1").enableCalendar()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.syncGoogleCalendar").value(getProjectByIdResponse.todos().get("todoId1").syncGoogleCalendar()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.enabled").value(getProjectByIdResponse.enabled()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.createdAt").value(getProjectByIdResponse.createdAt().format(JacksonConfig.dateTimeFormatter)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.updatedAt").value(getProjectByIdResponse.updatedAt().format(JacksonConfig.dateTimeFormatter)))
                 .andDo(restDocs.document());
@@ -180,9 +181,9 @@ class ProjectControllerTest extends RestDocsIntegration {
     @Test
     public void updateProjectById_success() throws Exception {
         //given
-        GetProjectVersionByIdResponse getProjectVersionByIdResponse = GetProjectVersionByIdResponse.of(1L, 1);
+        GetProjectVersionAndEnabledByIdResponse getProjectVersionAndEnabledByIdResponse = GetProjectVersionAndEnabledByIdResponse.of(1L, 1, true);
 
-        given(projectService.updateProjectById(any(), any(), any())).willReturn(getProjectVersionByIdResponse);
+        given(projectService.updateProjectById(any(), any(), any())).willReturn(getProjectVersionAndEnabledByIdResponse);
 
         PartialUpdateProjectRequest body = PartialUpdateProjectRequest.builder()
                 .version(0)
@@ -194,8 +195,8 @@ class ProjectControllerTest extends RestDocsIntegration {
                         .content(objectMapper.writeValueAsString(body))
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.projectId").value(getProjectVersionByIdResponse.projectId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.version").value(getProjectVersionByIdResponse.version()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.projectId").value(getProjectVersionAndEnabledByIdResponse.projectId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.version").value(getProjectVersionAndEnabledByIdResponse.version()))
                 .andDo(restDocs.document());
 
     }
@@ -215,18 +216,19 @@ class ProjectControllerTest extends RestDocsIntegration {
     }
 
     @Test
-    public void getProjectVersionById_success() throws Exception {
+    public void getProjectVersionAndEnabledById_success() throws Exception {
         //given
-        GetProjectVersionByIdResponse getProjectVersionByIdResponse = GetProjectVersionByIdResponse.of(1L, 1);
+        GetProjectVersionAndEnabledByIdResponse getProjectVersionAndEnabledByIdResponse = GetProjectVersionAndEnabledByIdResponse.of(1L, 1, true);
 
-        given(projectService.getProjectVersionById(any(), any())).willReturn(getProjectVersionByIdResponse);
+        given(projectService.getProjectVersionAndEnabledById(any(), any())).willReturn(getProjectVersionAndEnabledByIdResponse);
 
         //when & then
-        mockMvc.perform(MockMvcRequestBuilders.get(URL_PATH + "/1/version")
+        mockMvc.perform(MockMvcRequestBuilders.get(URL_PATH + "/1/version-enabled")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.projectId").value(getProjectVersionByIdResponse.projectId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.version").value(getProjectVersionByIdResponse.version()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.projectId").value(getProjectVersionAndEnabledByIdResponse.projectId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.version").value(getProjectVersionAndEnabledByIdResponse.version()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.enabled").value(getProjectVersionAndEnabledByIdResponse.enabled()))
                 .andDo(restDocs.document());
     }
 
@@ -235,7 +237,7 @@ class ProjectControllerTest extends RestDocsIntegration {
         //given
         GetProjectsByQueryResponse response = GetProjectsByQueryResponse.of(
                 List.of(
-                        new QueryProjectDto(1L, "title", true, LocalDateTime.now(), LocalDateTime.now() )
+                        new QueryProjectDto(1L, "title", true, LocalDateTime.now(), LocalDateTime.now())
                 ),
                 Pagination.builder().pageSize(10).currentPage(1).build()
         );

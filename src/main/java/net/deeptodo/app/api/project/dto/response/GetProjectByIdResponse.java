@@ -16,6 +16,7 @@ public record GetProjectByIdResponse
                 List<?> root,
                 Map<String, RecordBoard> boards,
                 Map<String, RecordTodo> todos,
+                boolean enabled,
                 LocalDateTime createdAt,
                 LocalDateTime updatedAt
         ) {
@@ -52,6 +53,7 @@ public record GetProjectByIdResponse
                                         entry.getValue().getEndDate()
                                 )
                         )))
+                .enabled(project.isEnabled())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .build();

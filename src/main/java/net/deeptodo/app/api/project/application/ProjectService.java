@@ -9,7 +9,7 @@ import net.deeptodo.app.api.project.dto.QueryProjectDto;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
-import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
+import net.deeptodo.app.api.project.dto.response.GetProjectVersionAndEnabledByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import net.deeptodo.app.api.project.exception.ProjectErrorCode;
 import net.deeptodo.app.common.exception.ConflictException;
@@ -69,18 +69,19 @@ public class ProjectService {
         projectRepository.deleteByIdAndUserId(id, authUserInfo.userId());
     }
 
-    public GetProjectVersionByIdResponse updateProjectById(
+    public GetProjectVersionAndEnabledByIdResponse updateProjectById(
             AuthUserInfo authUserInfo,
             Long projectId,
             PartialUpdateProjectRequest partialUpdateProjectRequest
     ) {
 
-        Integer nextProjectVersion = getNextProjectVersion(projectId, authUserInfo.userId(), partialUpdateProjectRequest.version());
+        ProjectIdAndVersionAndEnabledDto projectIdAndVersionAndEnabledDto =
+                getProjectVersionAndEnabledWithCheck(projectId, authUserInfo.userId(), partialUpdateProjectRequest.version());
 
         PartialUpdateProjectByIdAndUserIdDto dto = PartialUpdateProjectByIdAndUserIdDto.builder()
                 .projectId(projectId)
                 .userId(authUserInfo.userId())
-                .version(nextProjectVersion)
+                .version(getNextVersion(projectIdAndVersionAndEnabledDto.version()))
                 .title(partialUpdateProjectRequest.title())
                 .root(partialUpdateProjectRequest.root())
                 .boards(partialUpdateProjectRequest.boards())
@@ -89,33 +90,37 @@ public class ProjectService {
 
         projectRepository.partialUpdateByIdAndUserId(dto);
 
-        return GetProjectVersionByIdResponse.of(dto.projectId(), dto.version());
+        return GetProjectVersionAndEnabledByIdResponse.of(dto.projectId(), dto.version(), projectIdAndVersionAndEnabledDto.enabled());
 
     }
 
-    private Integer getNextProjectVersion(Long projectId, Long userId, Integer currentVersion) {
+    private ProjectIdAndVersionAndEnabledDto getProjectVersionAndEnabledWithCheck(Long projectId, Long userId, Integer currentVersion) {
         ProjectIdAndVersionAndEnabledDto dto = projectRepository.getVersionAndEnabledByIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.getErrorCode(ProjectErrorCode.NOT_FOUND_PROJECT)));
 
         if (!currentVersion.equals(dto.version())) {
             throw new ConflictException(ProjectErrorCode.getErrorCode(ProjectErrorCode.CONFLICT_PROJECT_VERSION));
         }
-        if(dto.enabled() == false) {
+        if (dto.enabled() == false) {
             throw new ForbiddenException(ProjectErrorCode.getErrorCode(ProjectErrorCode.FORBIDDEN_CREATE_PROJECT));
         }
 
+        return dto;
+    }
+
+    private Integer getNextVersion(Integer currentVersion) {
         final int VERSION_RANGE = 100;
 
-        Integer nextVersion = (dto.version() + 1) % VERSION_RANGE;
+        Integer nextVersion = (currentVersion + 1) % VERSION_RANGE;
 
         return nextVersion;
     }
 
-    public GetProjectVersionByIdResponse getProjectVersionById(AuthUserInfo authUserInfo, Long projectId) {
-        Integer version = projectRepository.getVersionByIdAndUserId(projectId, authUserInfo.userId())
+    public GetProjectVersionAndEnabledByIdResponse getProjectVersionAndEnabledById(AuthUserInfo authUserInfo, Long projectId) {
+        ProjectIdAndVersionAndEnabledDto dto = projectRepository.getVersionAndEnabledByIdAndUserId(projectId, authUserInfo.userId())
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.getErrorCode(ProjectErrorCode.NOT_FOUND_PROJECT)));
 
-        return GetProjectVersionByIdResponse.of(projectId, version);
+        return GetProjectVersionAndEnabledByIdResponse.of(projectId, dto.version(), dto.enabled());
     }
 
 
