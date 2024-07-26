@@ -91,7 +91,7 @@ class ProjectQueryDslRepositoryTest {
         em.clear();
 
         //when & then
-        GetProjectsByQueryDto recentQuery = new GetProjectsByQueryDto(1, "recent", null);
+        GetProjectsByQueryDto recentQuery = new GetProjectsByQueryDto(1, "recent",null, null);
         List<QueryProjectDto> recentProjects = projectQueryDslRepository.findProjectsByQuery(recentQuery, newUser.getId());
 
         assertThat(recentProjects).hasSize(2);
@@ -99,7 +99,7 @@ class ProjectQueryDslRepositoryTest {
         assertThat(recentProjects.get(1).getTitle()).isEqualTo("first");
         em.clear();
 
-        GetProjectsByQueryDto oldQuery = new GetProjectsByQueryDto(1, "old", null);
+        GetProjectsByQueryDto oldQuery = new GetProjectsByQueryDto(1, "old",null, null);
         List<QueryProjectDto> oldProjects = projectQueryDslRepository.findProjectsByQuery(oldQuery, newUser.getId());
 
         assertThat(oldProjects).hasSize(2);
@@ -107,11 +107,18 @@ class ProjectQueryDslRepositoryTest {
         assertThat(oldProjects.get(1).getTitle()).isEqualTo("second");
         em.clear();
 
-        GetProjectsByQueryDto searchQuery = new GetProjectsByQueryDto(1, "recent", "first");
+        GetProjectsByQueryDto searchQuery = new GetProjectsByQueryDto(1, "recent", null,"first");
         List<QueryProjectDto> searchProjects = projectQueryDslRepository.findProjectsByQuery(searchQuery, newUser.getId());
 
         assertThat(searchProjects).hasSize(1);
         assertThat(searchProjects.get(0).getTitle()).isEqualTo("first");
+        em.clear();
+
+        GetProjectsByQueryDto enabledQuery = new GetProjectsByQueryDto(1, "recent", true,null);
+        List<QueryProjectDto> enabledProjects = projectQueryDslRepository.findProjectsByQuery(enabledQuery, newUser.getId());
+
+        assertThat(enabledProjects).hasSize(1);
+        assertThat(enabledProjects.get(0).isEnabled()).isEqualTo(true);
         em.clear();
     }
 

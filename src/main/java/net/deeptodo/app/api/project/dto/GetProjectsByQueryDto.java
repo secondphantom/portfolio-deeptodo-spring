@@ -8,11 +8,13 @@ import net.deeptodo.app.common.exception.BadRequestException;
 public record GetProjectsByQueryDto(
         Integer page,
         QueryOrder order,
+        Boolean enabled,
         String search
+
 ) {
     @Builder
-    public GetProjectsByQueryDto(Integer page, String order, String search) {
-        this(page, parseOrder(order), search);
+    public GetProjectsByQueryDto(Integer page, String order, Boolean enabled,String search) {
+        this(page, parseOrder(order), enabled,search);
     }
 
     private static QueryOrder parseOrder(String order) {

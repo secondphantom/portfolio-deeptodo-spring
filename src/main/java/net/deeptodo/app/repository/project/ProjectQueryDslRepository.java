@@ -73,6 +73,7 @@ public class ProjectQueryDslRepository {
     public List<QueryProjectDto> findProjectsByQuery(GetProjectsByQueryDto dto, Long userId) {
 
         BooleanExpression searchPredicate = createSearchPredicate(dto.search());
+        BooleanExpression enabledPredicate = createEnabledPredicate(dto.enabled());
         OrderSpecifier<?> orderSpecifier = createOrderSpecifier(dto.order());
 
         return queryFactory.select(Projections.constructor(QueryProjectDto.class,
@@ -83,7 +84,7 @@ public class ProjectQueryDslRepository {
                         project.updatedAt
                         ))
                 .from(project)
-                .where(searchPredicate, project.user.id.eq(userId))
+                .where(searchPredicate, enabledPredicate,project.user.id.eq(userId))
                 .orderBy(orderSpecifier)
                 .offset((dto.page() - 1) * PAGE_SIZE)
                 .limit(PAGE_SIZE)
@@ -95,6 +96,13 @@ public class ProjectQueryDslRepository {
             return null;
         }
         return project.title.containsIgnoreCase(search);
+    }
+
+    private BooleanExpression createEnabledPredicate(Boolean enabled) {
+        if (enabled == null) {
+            return null;
+        }
+        return project.enabled.eq(enabled);
     }
 
     private OrderSpecifier<?> createOrderSpecifier(QueryOrder order) {

@@ -257,7 +257,7 @@ class ProjectServiceTest {
         projectRepository.create(newProject2);
 
         //when
-        GetProjectsByQueryDto queryDto = new GetProjectsByQueryDto(1, "recent", null);
+        GetProjectsByQueryDto queryDto = new GetProjectsByQueryDto(1, "recent", null,null);
         GetProjectsByQueryResponse response = projectService.getProjectsByQuery(new AuthUserInfo(newUser.getId()), queryDto);
 
         //then

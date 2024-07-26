@@ -244,15 +244,16 @@ class ProjectControllerTest extends RestDocsIntegration {
 
         given(projectService.getProjectsByQuery(any(), any())).willReturn(response);
 
-
         //when & then
         mockMvc.perform(MockMvcRequestBuilders.get(URL_PATH)
                         .param("page", "1")
                         .param("recent", "old")
+                        .param("enabled","true")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.projects[0].projectId").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.projects[0].title").value("title"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.projects[0].enabled").value(true))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.pagination.pageSize").value(10))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.pagination.currentPage").value(1))
                 .andDo(restDocs.document());

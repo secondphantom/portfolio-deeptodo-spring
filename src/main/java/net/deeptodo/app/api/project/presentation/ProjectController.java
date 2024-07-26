@@ -82,12 +82,15 @@ public class ProjectController {
             @AuthUser AuthUserInfo authUserInfo,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "recent") String order,
+            @RequestParam(required = false) boolean enabled,
             @RequestParam(required = false) String search
     ) {
 
+        GetProjectsByQueryDto query = GetProjectsByQueryDto.builder().page(page).order(order).enabled(enabled).search(search).build();
+
         GetProjectsByQueryResponse projectsByQuery = projectService.getProjectsByQuery(
                 authUserInfo,
-                GetProjectsByQueryDto.builder().page(page).order(order).search(search).build()
+                query
         );
         return ResponseEntity.ok(projectsByQuery);
     }
