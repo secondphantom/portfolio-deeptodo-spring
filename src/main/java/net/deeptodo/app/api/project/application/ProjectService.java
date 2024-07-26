@@ -13,6 +13,7 @@ import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import net.deeptodo.app.api.project.exception.ProjectErrorCode;
 import net.deeptodo.app.common.exception.ConflictException;
+import net.deeptodo.app.common.exception.ForbiddenException;
 import net.deeptodo.app.common.exception.NotFoundException;
 import net.deeptodo.app.common.exception.UnauthorizedException;
 import net.deeptodo.app.domain.Project;
@@ -38,6 +39,11 @@ public class ProjectService {
 
         User user = userRepository.getById(authUserInfo.userId())
                 .orElseThrow(() -> new UnauthorizedException(ProjectErrorCode.getErrorCode(ProjectErrorCode.UNAUTHORIZED_NOT_FOUND_MEMBER)));
+
+        Long projectCount = projectRepository.getCountByUserId(authUserInfo.userId());
+        if (!user.canCreateProject(projectCount)) {
+            throw new ForbiddenException(ProjectErrorCode.getErrorCode(ProjectErrorCode.FORBIDDEN_CREATE_PROJECT));
+        }
 
         Project newProject = Project.createNewProject(user);
 

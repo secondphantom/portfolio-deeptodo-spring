@@ -68,4 +68,8 @@ public class ProjectRepository {
         return projectQueryDslRepository.findProjectsByQuery(dto, userId);
     }
 
+    public Long getCountByUserId(Long userId) {
+        return projectJpaRepository.countByUser_id(userId);
+    }
+
 }

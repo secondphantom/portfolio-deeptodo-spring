@@ -116,7 +116,6 @@ public class ProjectNativeQueryRepository {
         }
 
         boolean isNeedUpdate = setStrList.size() >= 2;
-        System.out.println("isNeedUpdate = " + isNeedUpdate);
         if (!isNeedUpdate) {
             return;
         }

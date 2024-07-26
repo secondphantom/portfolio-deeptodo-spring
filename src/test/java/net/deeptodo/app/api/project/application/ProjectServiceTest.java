@@ -9,12 +9,15 @@ import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import net.deeptodo.app.common.exception.ConflictException;
+import net.deeptodo.app.common.exception.ForbiddenException;
 import net.deeptodo.app.common.exception.NotFoundException;
 import net.deeptodo.app.common.exception.UnauthorizedException;
-import net.deeptodo.app.domain.OauthServerType;
+import net.deeptodo.app.domain.PlanType;
 import net.deeptodo.app.domain.Project;
+import net.deeptodo.app.domain.SubscriptionPlan;
 import net.deeptodo.app.domain.User;
 import net.deeptodo.app.repository.project.ProjectRepository;
+import net.deeptodo.app.repository.subscription.SubscriptionPlanRepository;
 import net.deeptodo.app.repository.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +41,24 @@ class ProjectServiceTest {
     private UserRepository userRepository;
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private SubscriptionPlanRepository subscriptionPlanRepository;
 
     @Test
     public void createProject_success() {
         //given
-        User newUser =   User.builder().build();
+        SubscriptionPlan plan = SubscriptionPlan.builder()
+                .type(PlanType.FREE)
+                .durationDays(1000)
+                .id(1L)
+                .maxProjectCount(10)
+                .maxTodoCount(100)
+                .build();
+        subscriptionPlanRepository.create(plan);
+        em.flush();
+        em.clear();
+
+        User newUser = User.createNewUser(null, null, null, null, plan);
         Long userId = userRepository.create(newUser);
 
         //when
@@ -59,6 +75,33 @@ class ProjectServiceTest {
                 () -> projectService.createProject(new AuthUserInfo(2L))
         ).isInstanceOf(UnauthorizedException.class);
     }
+
+    @Test
+    public void createProject_fail_forbidden_exceed_project_count() throws Exception {
+        //given
+        SubscriptionPlan plan = SubscriptionPlan.builder()
+                .type(PlanType.FREE)
+                .durationDays(1000)
+                .id(1L)
+                .maxProjectCount(1)
+                .maxTodoCount(100)
+                .build();
+        subscriptionPlanRepository.create(plan);
+        em.flush();
+        em.clear();
+
+        User newUser = User.createNewUser(null, null, null, null, plan);
+        Long userId = userRepository.create(newUser);
+        Project newProject = Project.createNewProject(newUser);
+        projectRepository.create(newProject);
+        em.flush();
+
+        //when & then
+        assertThatThrownBy(
+                () -> projectService.createProject(new AuthUserInfo(userId))
+        ).isInstanceOf(ForbiddenException.class);
+    }
+
 
     @Test
     public void getProjectById_success() {
@@ -179,7 +222,7 @@ class ProjectServiceTest {
     @Test
     public void getProjectsByQuery_success() {
         //given
-        User newUser =User.builder().build();
+        User newUser = User.builder().build();
         userRepository.create(newUser);
         Project newProject1 = Project.createNewProject(newUser);
         projectRepository.create(newProject1);

@@ -14,7 +14,10 @@ import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectVersionByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import net.deeptodo.app.common.config.JacksonConfig;
-import net.deeptodo.app.domain.*;
+import net.deeptodo.app.domain.Board;
+import net.deeptodo.app.domain.Project;
+import net.deeptodo.app.domain.Todo;
+import net.deeptodo.app.domain.User;
 import net.deeptodo.app.repository.project.ProjectRepository;
 import net.deeptodo.app.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,14 +88,15 @@ class ProjectControllerTest extends RestDocsIntegration {
                 .andDo(restDocs.document());
     }
 
-    private User createUser () {
-        User user = User.builder().build();;
+    private User createUser() {
+        User user = User.builder().build();
+        ;
         userRepository.create(user);
         em.flush();
         return userRepository.getById(user.getId()).get();
     }
 
-    private Project createProject(Long projectId,User user) {
+    private Project createProject(Long projectId, User user) {
 
         Map<String, Board> boards = new HashMap<>();
         Board board1 = createBoard("board title 1");
@@ -144,10 +148,10 @@ class ProjectControllerTest extends RestDocsIntegration {
     public void getProjectById_success() throws Exception {
         //given
         User user = createUser();
-        Project project = createProject(1L,user);
+        Project project = createProject(1L, user);
         GetProjectByIdResponse getProjectByIdResponse = GetProjectByIdResponse.fromProject(project);
 
-        given(projectService.getProjectById(any(),any())).willReturn(getProjectByIdResponse);
+        given(projectService.getProjectById(any(), any())).willReturn(getProjectByIdResponse);
 
         //when & then
         mockMvc.perform(MockMvcRequestBuilders.get(URL_PATH + "/1"))
@@ -238,7 +242,6 @@ class ProjectControllerTest extends RestDocsIntegration {
 
         given(projectService.getProjectsByQuery(any(), any())).willReturn(response);
 
-        System.out.println("objectMapper.writeValueAsString() response = " + objectMapper.writeValueAsString(response));
 
         //when & then
         mockMvc.perform(MockMvcRequestBuilders.get(URL_PATH)

@@ -81,9 +81,9 @@ public class User extends BaseTimeEntity {
         return user;
     }
 
-    public boolean canCreateProject(Integer currentProjectCount) {
+    public boolean canCreateProject(Long currentProjectCount) {
         Integer maxProjectCount = subscription.getPlan().getMaxProjectCount();
-        if (currentProjectCount > maxProjectCount) {
+        if (currentProjectCount >= maxProjectCount) {
             return false;
         }
         return true;

@@ -11,8 +11,16 @@ public class SubscriptionPlanRepository {
     @Autowired
     private SubscriptionPlanJpaRepository subscriptionPlanJpaRepository;
 
+    public Long create(SubscriptionPlan plan) {
+        subscriptionPlanJpaRepository.save(plan);
+        return plan.getId();
+    }
+
     public SubscriptionPlan getByType(PlanType type) {
         return subscriptionPlanJpaRepository.findByType(type).get();
     }
+
+
+
 
 }
