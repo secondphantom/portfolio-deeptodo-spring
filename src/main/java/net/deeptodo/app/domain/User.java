@@ -60,7 +60,7 @@ public class User extends BaseTimeEntity {
             final String email,
             final String oauthServerId,
             final OauthServerType oauthServerType,
-            final SubscriptionPlan freePlan
+            final SubscriptionPlan plan
     ) {
         User user = User.builder()
                 .nickName(nickName)
@@ -71,10 +71,10 @@ public class User extends BaseTimeEntity {
 
         Subscription subscription = Subscription.builder()
                 .user(user)
-                .plan(freePlan)
+                .plan(plan)
                 .status(SubscriptionStatus.ACTIVE)
                 .startDate(LocalDateTime.now())
-                .expiredDate(LocalDateTime.now().plusDays(freePlan.getDurationDays()))
+                .expiredDate(LocalDateTime.now().plusDays(plan.getDurationDays()))
                 .build();
 
         user.subscription = subscription;

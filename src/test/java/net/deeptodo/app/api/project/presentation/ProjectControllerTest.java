@@ -67,11 +67,6 @@ class ProjectControllerTest extends RestDocsIntegration {
     public void beforeEach() throws Exception {
         AuthUserInfo authUserInfo = new AuthUserInfo(1L);
         given(authArgumentResolver.resolveArgument(any(), any(), any(), any())).willReturn(authUserInfo);
-
-    }
-
-    public static class DateJson {
-        private LocalDateTime date = LocalDateTime.now();
     }
 
     @Test
@@ -90,7 +85,7 @@ class ProjectControllerTest extends RestDocsIntegration {
 
     private User createUser() {
         User user = User.builder().build();
-        ;
+        
         userRepository.create(user);
         em.flush();
         return userRepository.getById(user.getId()).get();

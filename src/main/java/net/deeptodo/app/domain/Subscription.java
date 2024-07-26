@@ -27,17 +27,15 @@ public class Subscription extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus status;
-    private Integer billingCycleDays;
     private LocalDateTime startDate;
     private LocalDateTime expiredDate;
 
     @Builder
-    public Subscription(Long id, User user, SubscriptionPlan plan, SubscriptionStatus status, Integer billingCycleDays, LocalDateTime startDate, LocalDateTime expiredDate) {
+    public Subscription(Long id, User user, SubscriptionPlan plan, SubscriptionStatus status, LocalDateTime startDate, LocalDateTime expiredDate) {
         this.id = id;
         this.user = user;
         this.plan = plan;
         this.status = status;
-        this.billingCycleDays = billingCycleDays;
         this.startDate = startDate;
         this.expiredDate = expiredDate;
     }
