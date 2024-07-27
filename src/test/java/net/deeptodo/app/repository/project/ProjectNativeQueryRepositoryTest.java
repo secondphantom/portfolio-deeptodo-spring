@@ -1,12 +1,10 @@
 package net.deeptodo.app.repository.project;
 
 import jakarta.persistence.EntityManager;
-import net.deeptodo.app.domain.Board;
-import net.deeptodo.app.domain.Project;
-import net.deeptodo.app.domain.Todo;
-import net.deeptodo.app.domain.User;
+import net.deeptodo.app.domain.*;
 import net.deeptodo.app.repository.project.dto.PartialUpdateProjectByIdAndUserIdDto;
 import net.deeptodo.app.repository.user.UserRepository;
+import net.deeptodo.app.testutils.EntityUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,17 +35,15 @@ class ProjectNativeQueryRepositoryTest {
     @Test
     public void partialUpdateByIdAndUserId_success_not_need_update() throws Exception {
         //given
-        User newUser = User.builder().build();
-        userRepository.create(newUser);
-
-        Project newProject = Project.builder()
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder()
                 .title("new")
                 .version(1)
-                .user(newUser)
-                .build();
-
-        projectRepository.create(newProject);
-
+                .build(), newUser);
+        em.persist(newProject);
         em.flush();
         em.clear();
         //when
@@ -65,7 +61,7 @@ class ProjectNativeQueryRepositoryTest {
         //then
         em.clear();
 
-        Project findProject = projectRepository.getByIdAndUserId(newProject.getId(), newProject.getId()).get();
+        Project findProject = projectRepository.getByIdAndUserId(newProject.getId(), newUser.getId()).get();
 
         assertThat(findProject.getVersion()).isEqualTo(newProject.getVersion());
 
@@ -88,21 +84,19 @@ class ProjectNativeQueryRepositoryTest {
         todos.put("todo2", todo);
         todos.put("todo3", todo);
 
-        User newUser = User.builder().build();
-        userRepository.create(newUser);
-
-        Project newProject = Project.builder()
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder()
                 .title("new")
                 .version(1)
                 .root(root)
                 .user(newUser)
                 .boards(boards)
                 .todos(todos)
-                .build();
-
-        projectRepository.create(newProject);
-
-
+                .build(), newUser);
+        em.persist(newProject);
         em.flush();
         em.clear();
 
@@ -133,9 +127,8 @@ class ProjectNativeQueryRepositoryTest {
         projectNativeQueryRepository.partialUpdateByIdAndUserId(dto);
 
         //then
-        em.clear();
 
-        Project findProject = projectRepository.getByIdAndUserId(newProject.getId(), newProject.getId()).get();
+        Project findProject = projectRepository.getByIdAndUserId(newProject.getId(), newUser.getId()).get();
 
 
         assertThat(findProject.getVersion()).isEqualTo(updatedVersion);

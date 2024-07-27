@@ -2,8 +2,10 @@ package net.deeptodo.app.repository.project;
 
 import jakarta.persistence.EntityManager;
 import net.deeptodo.app.domain.Project;
+import net.deeptodo.app.domain.SubscriptionPlan;
 import net.deeptodo.app.domain.User;
 import net.deeptodo.app.repository.user.UserRepository;
+import net.deeptodo.app.testutils.EntityUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,16 +29,19 @@ class ProjectJpaRepositoryTest {
     @Test
     public void countByUser_id() throws Exception {
         //given
-        User oldUser = User.builder().build();
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User oldUser = EntityUtils.createNewUser(plan);
         em.persist(oldUser);
-        User newUser = User.builder().build();
+        User newUser = EntityUtils.createNewUser(plan);
         em.persist(newUser);
-        Project newProject = Project.createNewProject(newUser);
-        Project newProject2 = Project.createNewProject(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
+        Project newProject2 = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
         em.persist(newProject);
         em.persist(newProject2);
         em.flush();
         em.clear();
+
         //when
         long count = projectJpaRepository.countByUser_id(newUser.getId());
 

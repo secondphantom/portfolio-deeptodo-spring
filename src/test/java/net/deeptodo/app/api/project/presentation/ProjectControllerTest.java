@@ -14,12 +14,10 @@ import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectVersionAndEnabledByIdResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectsByQueryResponse;
 import net.deeptodo.app.common.config.JacksonConfig;
-import net.deeptodo.app.domain.Board;
-import net.deeptodo.app.domain.Project;
-import net.deeptodo.app.domain.Todo;
-import net.deeptodo.app.domain.User;
+import net.deeptodo.app.domain.*;
 import net.deeptodo.app.repository.project.ProjectRepository;
 import net.deeptodo.app.repository.user.UserRepository;
+import net.deeptodo.app.testutils.EntityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,13 +83,13 @@ class ProjectControllerTest extends RestDocsIntegration {
 
     private User createUser() {
         User user = User.builder().build();
-        
+
         userRepository.create(user);
         em.flush();
         return userRepository.getById(user.getId()).get();
     }
 
-    private Project createProject(Long projectId, User user) {
+    private Project createProject(User user) {
 
         Map<String, Board> boards = new HashMap<>();
         Board board1 = createBoard("board title 1");
@@ -108,7 +106,7 @@ class ProjectControllerTest extends RestDocsIntegration {
         List root = List.of(List.of("boardId1", List.of("todoId1", "todoId2")), List.of("boardId1"));
 
         Project project = Project.builder()
-                .id(projectId)
+//                .id(projectId)
                 .user(user)
                 .version(0)
                 .title("project title")
@@ -116,8 +114,10 @@ class ProjectControllerTest extends RestDocsIntegration {
                 .boards(boards)
                 .todos(todos)
                 .build();
-        projectRepository.create(project);
-        return projectRepository.getById(project.getId()).get();
+        Project defaultProject = EntityUtils.createDefaultProject(project, user);
+        em.persist(defaultProject);
+        em.flush();
+        return defaultProject;
     }
 
     private Board createBoard(String title) {
@@ -142,8 +142,11 @@ class ProjectControllerTest extends RestDocsIntegration {
     @Test
     public void getProjectById_success() throws Exception {
         //given
-        User user = createUser();
-        Project project = createProject(1L, user);
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User user = EntityUtils.createNewUser(plan);
+        em.persist(user);
+        Project project = createProject(user);
         GetProjectByIdResponse getProjectByIdResponse = GetProjectByIdResponse.fromProject(project);
 
         given(projectService.getProjectById(any(), any())).willReturn(getProjectByIdResponse);
@@ -243,7 +246,7 @@ class ProjectControllerTest extends RestDocsIntegration {
         mockMvc.perform(MockMvcRequestBuilders.get(URL_PATH)
                         .param("page", "1")
                         .param("recent", "old")
-                        .param("enabled","true")
+                        .param("enabled", "true")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.projects[0].projectId").value(1L))

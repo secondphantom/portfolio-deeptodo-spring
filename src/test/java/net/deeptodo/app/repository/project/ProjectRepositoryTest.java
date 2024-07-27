@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import net.deeptodo.app.domain.*;
 import net.deeptodo.app.repository.user.UserRepository;
+import net.deeptodo.app.testutils.EntityUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 class ProjectRepositoryTest {
     @Autowired
-    private EntityManager entityManager;
+    private EntityManager em;
 
     @Autowired
     private ProjectRepository projectRepository;
@@ -34,8 +35,11 @@ class ProjectRepositoryTest {
     @Test
     public void testJsonbFields() throws Exception {
         // given
-        User user = User.builder().build(); // Assuming User entity is properly defined
-        userRepository.create(user);
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User user = EntityUtils.createNewUser(plan);
+        em.persist(user);
+        em.flush();
 
         Map<String, Board> boards = new HashMap<>();
         Board board = Board.builder().title("Sample Board").build();
@@ -53,15 +57,15 @@ class ProjectRepositoryTest {
         List root = List.of("boardId", List.of("todoId", List.of()));
 
 
-        Project project = Project.builder()
-                .user(user)
+        Project project = EntityUtils.createDefaultProject(Project.builder()
                 .title("Sample Project")
                 .root(root)
                 .boards(boards)
                 .todos(todos)
-                .build();
-
-        projectRepository.create(project);
+                .build(), user);
+        em.persist(project);
+        em.flush();
+        em.clear();
 
         // When
         Project foundProject = projectRepository.getById(project.getId()).orElse(null);

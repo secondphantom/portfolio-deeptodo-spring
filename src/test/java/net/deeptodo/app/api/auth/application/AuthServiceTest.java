@@ -10,11 +10,10 @@ import net.deeptodo.app.api.auth.dto.response.TokenResponse;
 import net.deeptodo.app.api.auth.infrastructure.jwt.JwtUtils;
 import net.deeptodo.app.api.auth.infrastructure.jwt.TokenType;
 import net.deeptodo.app.common.exception.UnauthorizedException;
-import net.deeptodo.app.domain.PlanType;
 import net.deeptodo.app.domain.SubscriptionPlan;
 import net.deeptodo.app.domain.User;
-import net.deeptodo.app.repository.subscription.SubscriptionPlanRepository;
 import net.deeptodo.app.repository.user.UserRepository;
+import net.deeptodo.app.testutils.EntityUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
@@ -63,7 +61,7 @@ class AuthServiceTest {
     @Test
     public void loginOauthGoogleCallback_success() throws Exception {
         //given
-        SubscriptionPlan newPlan = SubscriptionPlan.builder().durationDays(1000).id(1L).type(PlanType.FREE).build();
+        SubscriptionPlan newPlan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
 
         em.persist(newPlan);
         em.flush();
@@ -117,7 +115,10 @@ class AuthServiceTest {
     @Test
     public void verifyRefreshToken_success() throws Exception {
         //given
-        User user = User.builder().id(1L).build();
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        em.flush();
+        User user = EntityUtils.createDefaultUser(User.builder().build());
         userRepository.create(user);
         JwtPayload payload = new JwtPayload(user.getId());
         String token = jwtUtils.generateToken(LocalDateTime.now(), TokenType.REFRESH, payload);

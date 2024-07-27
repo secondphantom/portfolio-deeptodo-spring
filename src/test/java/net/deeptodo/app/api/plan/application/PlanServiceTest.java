@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import net.deeptodo.app.api.plan.dto.response.GetPlansResponse;
 import net.deeptodo.app.domain.PlanType;
 import net.deeptodo.app.domain.SubscriptionPlan;
+import net.deeptodo.app.testutils.EntityUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,10 +24,12 @@ class PlanServiceTest {
     @Test
     public void getPlans() throws Exception {
         //given
-        SubscriptionPlan proPlan = SubscriptionPlan.builder().price(1.0).durationDays(1000).id(1L).type(PlanType.PRO).build();
+        SubscriptionPlan proPlan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().price(2.0).type(PlanType.PRO).build(), 1L);
+
         em.persist(proPlan);
         em.flush();
-        SubscriptionPlan freePlan = SubscriptionPlan.builder().price(0.0).durationDays(1000).id(2L).type(PlanType.FREE).build();
+        SubscriptionPlan freePlan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().price(0.0).type(PlanType.FREE).build(), 2L);
+
         em.persist(freePlan);
         em.flush();
 

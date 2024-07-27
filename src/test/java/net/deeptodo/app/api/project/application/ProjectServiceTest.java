@@ -18,7 +18,7 @@ import net.deeptodo.app.domain.SubscriptionPlan;
 import net.deeptodo.app.domain.User;
 import net.deeptodo.app.repository.project.ProjectRepository;
 import net.deeptodo.app.repository.subscription.SubscriptionPlanRepository;
-import net.deeptodo.app.repository.user.UserRepository;
+import net.deeptodo.app.testutils.EntityUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,33 +36,25 @@ class ProjectServiceTest {
     @Autowired
     private EntityManager em;
     @Autowired
-    private ProjectRepository projectRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private ProjectService projectService;
+    @Autowired
+    private ProjectRepository projectRepository;
     @Autowired
     private SubscriptionPlanRepository subscriptionPlanRepository;
 
     @Test
     public void createProject_success() {
         //given
-        SubscriptionPlan plan = SubscriptionPlan.builder()
-                .type(PlanType.FREE)
-                .durationDays(1000)
-                .id(1L)
-                .maxProjectCount(10)
-                .maxTodoCount(100)
-                .build();
-        subscriptionPlanRepository.create(plan);
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
         em.flush();
         em.clear();
 
-        User newUser = User.createNewUser(null, null, null, null, plan);
-        Long userId = userRepository.create(newUser);
-
         //when
-        CreateProjectResponse response = projectService.createProject(new AuthUserInfo(userId));
+        CreateProjectResponse response = projectService.createProject(new AuthUserInfo(newUser.getId()));
 
         //then
         assertThat(response.projectId()).isNotNull();
@@ -79,26 +71,24 @@ class ProjectServiceTest {
     @Test
     public void createProject_fail_forbidden_exceed_project_count() throws Exception {
         //given
-        SubscriptionPlan plan = SubscriptionPlan.builder()
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder()
                 .type(PlanType.FREE)
                 .durationDays(1000)
-                .id(1L)
                 .maxProjectCount(1)
                 .maxTodoCount(100)
-                .build();
-        subscriptionPlanRepository.create(plan);
+                .build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
+
+        Project newProject = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
+        em.persist(newProject);
         em.flush();
         em.clear();
 
-        User newUser = User.createNewUser(null, null, null, null, plan);
-        Long userId = userRepository.create(newUser);
-        Project newProject = Project.createNewProject(newUser);
-        projectRepository.create(newProject);
-        em.flush();
-
         //when & then
         assertThatThrownBy(
-                () -> projectService.createProject(new AuthUserInfo(userId))
+                () -> projectService.createProject(new AuthUserInfo(newUser.getId()))
         ).isInstanceOf(ForbiddenException.class);
     }
 
@@ -106,10 +96,14 @@ class ProjectServiceTest {
     @Test
     public void getProjectById_success() {
         //given
-        User newUser = User.builder().build();
-        userRepository.create(newUser);
-        Project newProject = Project.createNewProject(newUser);
-        projectRepository.create(newProject);
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
+        em.persist(newProject);
+        em.flush();
+        em.clear();
 
         //when
         GetProjectByIdResponse response = projectService.getProjectById(new AuthUserInfo(newUser.getId()), newProject.getId());
@@ -130,10 +124,14 @@ class ProjectServiceTest {
     @Test
     public void deleteProjectById_success() {
         //given
-        User newUser = User.builder().build();
-        userRepository.create(newUser);
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
         Project newProject = Project.createNewProject(newUser);
-        projectRepository.create(newProject);
+        em.persist(newProject);
+        em.flush();
+        em.clear();
 
         //when & then
         projectService.deleteProjectById(new AuthUserInfo(newUser.getId()), newProject.getId());
@@ -146,14 +144,18 @@ class ProjectServiceTest {
     @Test
     public void updateProjectById_success() {
         //given
-        User newUser = User.builder().build();
-        userRepository.create(newUser);
-        Project newProject = Project.builder()
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder()
                 .user(newUser)
                 .version(99)
                 .enabled(true)
-                .build();
-        projectRepository.create(newProject);
+                .build(), newUser);
+        em.persist(newProject);
+        em.flush();
+        em.clear();
 
         PartialUpdateProjectRequest dto = PartialUpdateProjectRequest.builder()
                 .version(99)
@@ -178,13 +180,15 @@ class ProjectServiceTest {
     @Test
     public void updateProjectById_fail_version_conflict() {
         //given
-        User newUser = User.builder().build();
-        userRepository.create(newUser);
-        Project newProject = Project.builder()
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder()
                 .user(newUser)
                 .version(99)
-                .build();
-        projectRepository.create(newProject);
+                .build(), newUser);
+        em.persist(newProject);
 
         PartialUpdateProjectRequest dto = PartialUpdateProjectRequest.builder().version(1).build();
 
@@ -200,17 +204,17 @@ class ProjectServiceTest {
     @Test
     public void updateProjectById_fail_not_enabled_project() {
         //given
-        User newUser = User.builder().build();
-        userRepository.create(newUser);
-        Project newProject = Project.builder()
-                .user(newUser)
-                .version(99)
-                .enabled(false)
-                .build();
-        projectRepository.create(newProject);
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
+        em.persist(newProject);
+        em.flush();
+        em.clear();
 
         PartialUpdateProjectRequest dto = PartialUpdateProjectRequest
-                .builder().version(99).build();
+                .builder().version(newProject.getVersion()).build();
 
         //when & then
         assertThatThrownBy(
@@ -225,10 +229,14 @@ class ProjectServiceTest {
     @Test
     public void getProjectVersionAndEnabledById_success() {
         //given
-        User newUser = User.builder().build();
-        userRepository.create(newUser);
-        Project newProject = Project.createNewProject(newUser);
-        projectRepository.create(newProject);
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
+        em.persist(newProject);
+        em.flush();
+        em.clear();
 
         //when
         GetProjectVersionAndEnabledByIdResponse response = projectService.getProjectVersionAndEnabledById(new AuthUserInfo(newUser.getId()), newProject.getId());
@@ -249,15 +257,18 @@ class ProjectServiceTest {
     @Test
     public void getProjectsByQuery_success() {
         //given
-        User newUser = User.builder().build();
-        userRepository.create(newUser);
-        Project newProject1 = Project.createNewProject(newUser);
-        projectRepository.create(newProject1);
-        Project newProject2 = Project.createNewProject(newUser);
-        projectRepository.create(newProject2);
+
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
+        Project newProject1 = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
+        em.persist(newProject1);
+        Project newProject2 = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
+        em.persist(newProject2);
 
         //when
-        GetProjectsByQueryDto queryDto = new GetProjectsByQueryDto(1, "recent", null,null);
+        GetProjectsByQueryDto queryDto = new GetProjectsByQueryDto(1, "recent", null, null);
         GetProjectsByQueryResponse response = projectService.getProjectsByQuery(new AuthUserInfo(newUser.getId()), queryDto);
 
         //then

@@ -3,6 +3,7 @@ package net.deeptodo.app.repository.subscription;
 import jakarta.persistence.EntityManager;
 import net.deeptodo.app.domain.PlanType;
 import net.deeptodo.app.domain.SubscriptionPlan;
+import net.deeptodo.app.testutils.EntityUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,8 +24,7 @@ class SubscriptionPlanJpaRepositoryTest {
     @Test
     public void findByType() throws Exception {
         //given
-        SubscriptionPlan newPlan = SubscriptionPlan.builder().id(1L).type(PlanType.FREE).build();
-
+        SubscriptionPlan newPlan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
         em.persist(newPlan);
         em.flush();
         em.clear();

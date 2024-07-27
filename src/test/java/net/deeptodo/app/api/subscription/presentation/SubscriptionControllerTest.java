@@ -7,10 +7,10 @@ import net.deeptodo.app.api.RestDocsIntegration;
 import net.deeptodo.app.api.subscription.application.SubscriptionService;
 import net.deeptodo.app.api.subscription.dto.response.GetSubscriptionResponse;
 import net.deeptodo.app.common.config.JacksonConfig;
-import net.deeptodo.app.domain.OauthServerType;
 import net.deeptodo.app.domain.PlanType;
 import net.deeptodo.app.domain.SubscriptionPlan;
 import net.deeptodo.app.domain.User;
+import net.deeptodo.app.testutils.EntityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,15 +53,15 @@ class SubscriptionControllerTest extends RestDocsIntegration {
                 .maxTodoCount(200)
                 .enabled(true)
                 .build();
-        em.persist(plan);
+        SubscriptionPlan defaultPlan = EntityUtils.createDefaultPlan(plan, planId);
+        em.persist(defaultPlan);
         em.flush();
 
         return plan;
     }
 
     private User createUser(SubscriptionPlan plan) {
-        User user = User.createNewUser(null, null, null, OauthServerType.GOOGLE, plan);
-
+        User user = EntityUtils.createNewUser(plan);
         em.persist(user);
         em.flush();
         return user;

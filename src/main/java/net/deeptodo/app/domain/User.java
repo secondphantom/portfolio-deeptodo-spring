@@ -65,8 +65,10 @@ public class User extends BaseTimeEntity {
         User user = User.builder()
                 .nickName(nickName)
                 .email(email)
+                .billingKey("")
                 .oauthServerId(oauthServerId)
                 .oauthServerType(oauthServerType)
+                .oauthToken("")
                 .build();
 
         Subscription subscription = Subscription.builder()

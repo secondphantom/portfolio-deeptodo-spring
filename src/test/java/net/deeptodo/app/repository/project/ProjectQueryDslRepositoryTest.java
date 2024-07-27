@@ -4,8 +4,10 @@ import jakarta.persistence.EntityManager;
 import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
 import net.deeptodo.app.api.project.dto.QueryProjectDto;
 import net.deeptodo.app.domain.Project;
+import net.deeptodo.app.domain.SubscriptionPlan;
 import net.deeptodo.app.domain.User;
 import net.deeptodo.app.repository.project.dto.ProjectIdAndVersionAndEnabledDto;
+import net.deeptodo.app.testutils.EntityUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,12 +31,14 @@ class ProjectQueryDslRepositoryTest {
     @Test
     public void findVersionById() {
         //given
-        User newUser = User.builder().build();
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
         em.persist(newUser);
-        Project newProject = Project.createNewProject(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
         em.persist(newProject);
-
         em.flush();
+        em.clear();
 
         //when
         Optional<Integer> version = projectQueryDslRepository.findVersionById(newProject.getId());
@@ -46,12 +50,14 @@ class ProjectQueryDslRepositoryTest {
     @Test
     public void findIdByIdAndUserId() {
         //given
-        User newUser = User.builder().build();
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
         em.persist(newUser);
-        Project newProject = Project.createNewProject(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
         em.persist(newProject);
-
         em.flush();
+        em.clear();
 
         //when
         Optional<Long> id = projectQueryDslRepository.findIdByIdAndUserId(newProject.getId(), newUser.getId());
@@ -64,34 +70,36 @@ class ProjectQueryDslRepositoryTest {
     @Test
     public void findProjectsByQuery() {
         //given
-        User newUser = User.builder().build();
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
         em.persist(newUser);
-        Project project1 = Project.builder()
-                .user(newUser)
-                .title("first")
-                .version(1)
-                .enabled(true)
-                .root(List.of())
-                .boards(Map.of())
-                .todos(Map.of())
-                .build();
+        Project project1 = EntityUtils.createDefaultProject(Project.builder()
+                        .title("first")
+                        .version(1)
+                        .enabled(true)
+                        .root(List.of())
+                        .boards(Map.of())
+                        .todos(Map.of())
+                        .build(),
+                newUser);
         em.persist(project1);
-        em.flush();
-        Project project2 = Project.builder()
-                .user(newUser)
-                .title("second")
-                .version(1)
-                .enabled(false)
-                .root(List.of())
-                .boards(Map.of())
-                .todos(Map.of())
-                .build();
+        Project project2 = EntityUtils.createDefaultProject(Project.builder()
+                        .user(newUser)
+                        .title("second")
+                        .version(1)
+                        .enabled(false)
+                        .root(List.of())
+                        .boards(Map.of())
+                        .todos(Map.of())
+                        .build(),
+                newUser);
         em.persist(project2);
         em.flush();
         em.clear();
 
         //when & then
-        GetProjectsByQueryDto recentQuery = new GetProjectsByQueryDto(1, "recent",null, null);
+        GetProjectsByQueryDto recentQuery = new GetProjectsByQueryDto(1, "recent", null, null);
         List<QueryProjectDto> recentProjects = projectQueryDslRepository.findProjectsByQuery(recentQuery, newUser.getId());
 
         assertThat(recentProjects).hasSize(2);
@@ -99,7 +107,7 @@ class ProjectQueryDslRepositoryTest {
         assertThat(recentProjects.get(1).getTitle()).isEqualTo("first");
         em.clear();
 
-        GetProjectsByQueryDto oldQuery = new GetProjectsByQueryDto(1, "old",null, null);
+        GetProjectsByQueryDto oldQuery = new GetProjectsByQueryDto(1, "old", null, null);
         List<QueryProjectDto> oldProjects = projectQueryDslRepository.findProjectsByQuery(oldQuery, newUser.getId());
 
         assertThat(oldProjects).hasSize(2);
@@ -107,14 +115,14 @@ class ProjectQueryDslRepositoryTest {
         assertThat(oldProjects.get(1).getTitle()).isEqualTo("second");
         em.clear();
 
-        GetProjectsByQueryDto searchQuery = new GetProjectsByQueryDto(1, "recent", null,"first");
+        GetProjectsByQueryDto searchQuery = new GetProjectsByQueryDto(1, "recent", null, "first");
         List<QueryProjectDto> searchProjects = projectQueryDslRepository.findProjectsByQuery(searchQuery, newUser.getId());
 
         assertThat(searchProjects).hasSize(1);
         assertThat(searchProjects.get(0).getTitle()).isEqualTo("first");
         em.clear();
 
-        GetProjectsByQueryDto enabledQuery = new GetProjectsByQueryDto(1, "recent", true,null);
+        GetProjectsByQueryDto enabledQuery = new GetProjectsByQueryDto(1, "recent", true, null);
         List<QueryProjectDto> enabledProjects = projectQueryDslRepository.findProjectsByQuery(enabledQuery, newUser.getId());
 
         assertThat(enabledProjects).hasSize(1);
@@ -125,11 +133,12 @@ class ProjectQueryDslRepositoryTest {
     @Test
     public void findVersionAndEnabledByIdAndUserId() throws Exception {
         //given
-        User newUser = User.builder().build();
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User newUser = EntityUtils.createNewUser(plan);
         em.persist(newUser);
-        Project newProject = Project.createNewProject(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
         em.persist(newProject);
-
         em.flush();
         em.clear();
         //when
