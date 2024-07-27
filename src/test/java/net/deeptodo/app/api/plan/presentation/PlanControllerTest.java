@@ -58,14 +58,14 @@ class PlanControllerTest extends RestDocsIntegration {
         //when & then
         mockMvc.perform(MockMvcRequestBuilders.get(URL_PATH))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.plans[0].planId").value(response.plans().get(0).planId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.plans[0].type").value(response.plans().get(0).type()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.plans[0].description").value(response.plans().get(0).description()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.plans[0].price").value(response.plans().get(0).price()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.plans[0].durationDays").value(response.plans().get(0).durationDays()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.plans[0].maxProjectCount").value(response.plans().get(0).maxProjectCount()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.plans[0].maxTodoCount").value(response.plans().get(0).maxTodoCount()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.plans[0].enabled").value(response.plans().get(0).enabled()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.plans[0].planId").value(response.plans().get(0).planId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.plans[0].type").value(response.plans().get(0).type()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.plans[0].description").value(response.plans().get(0).description()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.plans[0].price").value(response.plans().get(0).price()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.plans[0].durationDays").value(response.plans().get(0).durationDays()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.plans[0].maxProjectCount").value(response.plans().get(0).maxProjectCount()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.plans[0].maxTodoCount").value(response.plans().get(0).maxTodoCount()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.plans[0].enabled").value(response.plans().get(0).enabled()))
                 .andDo(restDocs.document());
     }
 

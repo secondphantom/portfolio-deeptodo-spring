@@ -82,7 +82,7 @@ class AuthControllerTest extends RestDocsIntegration {
                                 .cookie(new Cookie("access_token", "token"))
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(authUserResponse.userId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.userId").value(authUserResponse.userId()))
                 .andDo(restDocs.document());
 
     }

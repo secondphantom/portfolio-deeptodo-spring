@@ -77,7 +77,7 @@ class ProjectControllerTest extends RestDocsIntegration {
         //when & then
         mockMvc.perform(MockMvcRequestBuilders.post(URL_PATH))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.projectId").value(createProjectResponse.projectId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.projectId").value(createProjectResponse.projectId()))
                 .andDo(restDocs.document());
     }
 
@@ -154,24 +154,24 @@ class ProjectControllerTest extends RestDocsIntegration {
         //when & then
         mockMvc.perform(MockMvcRequestBuilders.get(URL_PATH + "/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.projectId").value(getProjectByIdResponse.projectId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.version").value(getProjectByIdResponse.version()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(getProjectByIdResponse.title()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.root").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.boards").isMap())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.boards.boardId1.title").value(getProjectByIdResponse.boards().get("boardId1").title()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.todos").isMap())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.done").value(getProjectByIdResponse.todos().get("todoId1").done()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.title").value(getProjectByIdResponse.todos().get("todoId1").title()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.expand").value(getProjectByIdResponse.todos().get("todoId1").expand()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.todoId").value(getProjectByIdResponse.todos().get("todoId1").todoId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.startDate").value(getProjectByIdResponse.todos().get("todoId1").startDate().format(JacksonConfig.dateTimeFormatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.endDate").value(getProjectByIdResponse.todos().get("todoId1").endDate().format(JacksonConfig.dateTimeFormatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.enableCalendar").value(getProjectByIdResponse.todos().get("todoId1").enableCalendar()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.todos.todoId1.syncGoogleCalendar").value(getProjectByIdResponse.todos().get("todoId1").syncGoogleCalendar()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.enabled").value(getProjectByIdResponse.enabled()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.createdAt").value(getProjectByIdResponse.createdAt().format(JacksonConfig.dateTimeFormatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.updatedAt").value(getProjectByIdResponse.updatedAt().format(JacksonConfig.dateTimeFormatter)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.projectId").value(getProjectByIdResponse.projectId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.version").value(getProjectByIdResponse.version()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.title").value(getProjectByIdResponse.title()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.root").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.boards").isMap())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.boards.boardId1.title").value(getProjectByIdResponse.boards().get("boardId1").title()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos").isMap())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos.todoId1.done").value(getProjectByIdResponse.todos().get("todoId1").done()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos.todoId1.title").value(getProjectByIdResponse.todos().get("todoId1").title()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos.todoId1.expand").value(getProjectByIdResponse.todos().get("todoId1").expand()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos.todoId1.todoId").value(getProjectByIdResponse.todos().get("todoId1").todoId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos.todoId1.startDate").value(getProjectByIdResponse.todos().get("todoId1").startDate().format(JacksonConfig.dateTimeFormatter)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos.todoId1.endDate").value(getProjectByIdResponse.todos().get("todoId1").endDate().format(JacksonConfig.dateTimeFormatter)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos.todoId1.enableCalendar").value(getProjectByIdResponse.todos().get("todoId1").enableCalendar()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos.todoId1.syncGoogleCalendar").value(getProjectByIdResponse.todos().get("todoId1").syncGoogleCalendar()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.enabled").value(getProjectByIdResponse.enabled()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createdAt").value(getProjectByIdResponse.createdAt().format(JacksonConfig.dateTimeFormatter)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.updatedAt").value(getProjectByIdResponse.updatedAt().format(JacksonConfig.dateTimeFormatter)))
                 .andDo(restDocs.document());
 
     }
@@ -193,8 +193,9 @@ class ProjectControllerTest extends RestDocsIntegration {
                         .content(objectMapper.writeValueAsString(body))
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.projectId").value(getProjectVersionAndEnabledByIdResponse.projectId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.version").value(getProjectVersionAndEnabledByIdResponse.version()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.projectId").value(getProjectVersionAndEnabledByIdResponse.projectId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.version").value(getProjectVersionAndEnabledByIdResponse.version()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.enabled").value(getProjectVersionAndEnabledByIdResponse.enabled()))
                 .andDo(restDocs.document());
 
     }
@@ -224,9 +225,9 @@ class ProjectControllerTest extends RestDocsIntegration {
         mockMvc.perform(MockMvcRequestBuilders.get(URL_PATH + "/1/version-enabled")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.projectId").value(getProjectVersionAndEnabledByIdResponse.projectId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.version").value(getProjectVersionAndEnabledByIdResponse.version()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.enabled").value(getProjectVersionAndEnabledByIdResponse.enabled()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.projectId").value(getProjectVersionAndEnabledByIdResponse.projectId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.version").value(getProjectVersionAndEnabledByIdResponse.version()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.enabled").value(getProjectVersionAndEnabledByIdResponse.enabled()))
                 .andDo(restDocs.document());
     }
 
@@ -249,11 +250,11 @@ class ProjectControllerTest extends RestDocsIntegration {
                         .param("enabled", "true")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.projects[0].projectId").value(1L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.projects[0].title").value("title"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.projects[0].enabled").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.pagination.pageSize").value(10))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.pagination.currentPage").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.projects[0].projectId").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.projects[0].title").value("title"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.projects[0].enabled").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.pagination.pageSize").value(10))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.pagination.currentPage").value(1))
                 .andDo(restDocs.document());
 
     }

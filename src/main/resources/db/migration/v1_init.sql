@@ -77,5 +77,5 @@ CREATE INDEX idx_project_user_id_created_at_desc ON projects(user_id, created_at
 CREATE INDEX idx_project_user_id_updated_at_desc ON projects(user_id, updated_at DESC);
 CREATE INDEX idx_payment_user_id ON payments(user_id);
 CREATE INDEX idx_payment_user_id_created_at_desc ON projects(user_id, created_at DESC);
-CREATE INDEX idx_subscription_user_id ON subscriptions(user_id);
+CREATE INDEX idx _subscription_user_id ON subscriptions(user_id);
 

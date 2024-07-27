@@ -4,9 +4,10 @@ import net.deeptodo.app.common.exception.ErrorCode;
 
 public record ErrorResponse(
         String code,
-        String message
+        String message,
+        boolean success
 ) {
     public static ErrorResponse from(ErrorCode<?> errorCode) {
-        return new ErrorResponse(errorCode.getCode(), errorCode.getMessage());
+        return new ErrorResponse(errorCode.getCode(), errorCode.getMessage(),false);
     }
 }
