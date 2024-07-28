@@ -7,6 +7,7 @@ import net.deeptodo.app.api.auth.dto.response.AuthUrlResponse;
 import net.deeptodo.app.api.auth.dto.response.AuthUserResponse;
 import net.deeptodo.app.api.auth.dto.response.TokenResponse;
 import net.deeptodo.app.common.infrastructure.CookieUtils;
+import net.deeptodo.app.common.properties.DomainProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,16 +19,16 @@ import java.io.IOException;
 public class AuthController {
 
     private final AuthService authService;
+    private final DomainProperties domainProperties;
 
     @GetMapping("/login/oauth/google")
-    public ResponseEntity<Void> loginOauthGoogle(
+    public ResponseEntity<AuthUrlResponse> loginOauthGoogle(
             HttpServletResponse response
     ) throws IOException {
 
         AuthUrlResponse authUrlResponse = authService.loginOauthGoogle();
-        response.sendRedirect(authUrlResponse.authUrl());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(authUrlResponse);
     }
 
 
@@ -35,12 +36,14 @@ public class AuthController {
     public ResponseEntity<Void> loginOauthGoogleCallback(
             @RequestParam("code") String code,
             HttpServletResponse response
-    ) {
+    ) throws IOException {
 
         TokenResponse tokenResponse = authService.loginOauthGoogleCallback(code);
 
         CookieUtils.addCookie(response, "access_token", tokenResponse.accessToken(), tokenResponse.accessTokenMaxAge());
         CookieUtils.addCookie(response, "refresh_token", tokenResponse.refreshToken(), tokenResponse.refreshTokenMaxAge());
+
+        response.sendRedirect(domainProperties.getServiceUrl());
 
         return ResponseEntity.ok().build();
     }

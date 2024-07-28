@@ -19,7 +19,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GoogleProviderUtils implements ProvidersUtils {
 
-
     private final Oauth2GoogleProperties oauth2GoogleProperties;
 
     public Optional<String> generateAuthUrl() {

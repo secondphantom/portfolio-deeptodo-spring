@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 class AuthControllerTest extends RestDocsIntegration {
@@ -29,8 +30,8 @@ class AuthControllerTest extends RestDocsIntegration {
         );
         //when & then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/auth/login/oauth/google"))
-                .andExpect(MockMvcResultMatchers.status().isFound())
-                .andExpect(MockMvcResultMatchers.redirectedUrl(redirectUrl))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.authUrl").value(redirectUrl))
                 .andDo(restDocs.document());
 
     }
@@ -53,7 +54,7 @@ class AuthControllerTest extends RestDocsIntegration {
                         MockMvcRequestBuilders.get("/api/auth/login/oauth/google/callback")
                                 .param("code", "code")
                 )
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isFound())
                 .andExpect(MockMvcResultMatchers.cookie().value(
                         "access_token", tokenResponse.accessToken()))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
@@ -62,6 +63,7 @@ class AuthControllerTest extends RestDocsIntegration {
                         "refresh_token", tokenResponse.refreshToken()))
                 .andExpect(MockMvcResultMatchers.cookie().maxAge(
                         "refresh_token", tokenResponse.refreshTokenMaxAge()))
+                .andExpect(MockMvcResultMatchers.redirectedUrlPattern("**"))
                 .andDo(restDocs.document());
 
     }

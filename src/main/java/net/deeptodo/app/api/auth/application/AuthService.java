@@ -14,6 +14,7 @@ import net.deeptodo.app.common.exception.CommonErrorCode;
 import net.deeptodo.app.common.exception.ErrorCode;
 import net.deeptodo.app.common.exception.InternalSeverErrorException;
 import net.deeptodo.app.common.exception.UnauthorizedException;
+import net.deeptodo.app.common.properties.DomainProperties;
 import net.deeptodo.app.domain.OauthServerType;
 import net.deeptodo.app.domain.PlanType;
 import net.deeptodo.app.domain.SubscriptionPlan;
@@ -34,7 +35,6 @@ public class AuthService {
     private final SubscriptionPlanRepository subscriptionPlanRepository;
     private final ProvidersUtils googleProviderUtils;
     private final JwtUtils jwtUtils;
-
 
     public AuthUrlResponse loginOauthGoogle() {
         String authUrl = googleProviderUtils.generateAuthUrl().orElseThrow(() ->
