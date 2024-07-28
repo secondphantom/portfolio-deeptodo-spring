@@ -6,6 +6,7 @@ import net.deeptodo.app.api.project.ProjectDefaultValue;
 import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
 import net.deeptodo.app.api.project.dto.Pagination;
 import net.deeptodo.app.api.project.dto.QueryProjectDto;
+import net.deeptodo.app.api.project.dto.request.CreateProjectRequest;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
@@ -36,7 +37,7 @@ public class ProjectService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CreateProjectResponse createProject(AuthUserInfo authUserInfo) {
+    public CreateProjectResponse createProject(AuthUserInfo authUserInfo, CreateProjectRequest request) {
 
         User user = userRepository.getById(authUserInfo.userId())
                 .orElseThrow(() -> new UnauthorizedException(ProjectErrorCode.getErrorCode(ProjectErrorCode.UNAUTHORIZED_NOT_FOUND_MEMBER)));
@@ -46,7 +47,7 @@ public class ProjectService {
             throw new ForbiddenException(ProjectErrorCode.getErrorCode(ProjectErrorCode.FORBIDDEN_CREATE_PROJECT));
         }
 
-        Project newProject = Project.createNewProject(user);
+        Project newProject = Project.createNewProject(user,request.title());
 
         Long projectId = projectRepository.create(newProject);
 

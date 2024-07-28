@@ -6,6 +6,7 @@ import net.deeptodo.app.aop.auth.AuthUser;
 import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.api.project.application.ProjectService;
 import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
+import net.deeptodo.app.api.project.dto.request.CreateProjectRequest;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
@@ -23,10 +24,11 @@ public class ProjectController {
 
     @PostMapping
     public ResponseEntity<CreateProjectResponse> createProject(
-            @AuthUser AuthUserInfo authUserInfo
+            @AuthUser AuthUserInfo authUserInfo,
+            @RequestBody @Valid CreateProjectRequest request
     ) {
 
-        CreateProjectResponse createProjectResponse = projectService.createProject(authUserInfo);
+        CreateProjectResponse createProjectResponse = projectService.createProject(authUserInfo,request);
 
         return ResponseEntity.ok(createProjectResponse);
     }
@@ -82,7 +84,7 @@ public class ProjectController {
             @AuthUser AuthUserInfo authUserInfo,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "recent") String order,
-            @RequestParam(required = false) boolean enabled,
+            @RequestParam(defaultValue = "true") boolean enabled,
             @RequestParam(required = false) String search
     ) {
 

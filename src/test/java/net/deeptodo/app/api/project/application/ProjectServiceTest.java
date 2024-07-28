@@ -3,6 +3,7 @@ package net.deeptodo.app.api.project.application;
 import jakarta.persistence.EntityManager;
 import net.deeptodo.app.aop.auth.dto.AuthUserInfo;
 import net.deeptodo.app.api.project.dto.GetProjectsByQueryDto;
+import net.deeptodo.app.api.project.dto.request.CreateProjectRequest;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
@@ -54,7 +55,9 @@ class ProjectServiceTest {
         em.clear();
 
         //when
-        CreateProjectResponse response = projectService.createProject(new AuthUserInfo(newUser.getId()));
+        CreateProjectResponse response = projectService.createProject(
+                new AuthUserInfo(newUser.getId()),
+                new CreateProjectRequest("title"));
 
         //then
         assertThat(response.projectId()).isNotNull();
@@ -64,7 +67,7 @@ class ProjectServiceTest {
     public void createProject_fail_not_found_user() {
         //when & then
         assertThatThrownBy(
-                () -> projectService.createProject(new AuthUserInfo(2L))
+                () -> projectService.createProject(new AuthUserInfo(2L),new CreateProjectRequest("title"))
         ).isInstanceOf(UnauthorizedException.class);
     }
 
@@ -88,7 +91,7 @@ class ProjectServiceTest {
 
         //when & then
         assertThatThrownBy(
-                () -> projectService.createProject(new AuthUserInfo(newUser.getId()))
+                () -> projectService.createProject(new AuthUserInfo(newUser.getId()),new CreateProjectRequest("title"))
         ).isInstanceOf(ForbiddenException.class);
     }
 
@@ -128,7 +131,7 @@ class ProjectServiceTest {
         em.persist(plan);
         User newUser = EntityUtils.createNewUser(plan);
         em.persist(newUser);
-        Project newProject = Project.createNewProject(newUser);
+        Project newProject = Project.createNewProject(newUser,"title");
         em.persist(newProject);
         em.flush();
         em.clear();

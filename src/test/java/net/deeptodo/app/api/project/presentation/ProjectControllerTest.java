@@ -8,6 +8,7 @@ import net.deeptodo.app.api.RestDocsIntegration;
 import net.deeptodo.app.api.project.application.ProjectService;
 import net.deeptodo.app.api.project.dto.Pagination;
 import net.deeptodo.app.api.project.dto.QueryProjectDto;
+import net.deeptodo.app.api.project.dto.request.CreateProjectRequest;
 import net.deeptodo.app.api.project.dto.request.PartialUpdateProjectRequest;
 import net.deeptodo.app.api.project.dto.response.CreateProjectResponse;
 import net.deeptodo.app.api.project.dto.response.GetProjectByIdResponse;
@@ -72,10 +73,16 @@ class ProjectControllerTest extends RestDocsIntegration {
         //given
         CreateProjectResponse createProjectResponse = CreateProjectResponse.of(1L);
 
-        given(projectService.createProject(any())).willReturn(createProjectResponse);
+        given(projectService.createProject(any(),any())).willReturn(createProjectResponse);
+
+        CreateProjectRequest body = CreateProjectRequest.builder()
+                .title("title")
+                .build();
 
         //when & then
-        mockMvc.perform(MockMvcRequestBuilders.post(URL_PATH))
+        mockMvc.perform(MockMvcRequestBuilders.post(URL_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.projectId").value(createProjectResponse.projectId()))
                 .andDo(restDocs.document());

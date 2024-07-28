@@ -53,11 +53,12 @@ public class Project extends BaseTimeEntity {
     }
 
     static public Project createNewProject(
-            User user
+            User user,
+            String title
     ) {
         return Project.builder()
                 .user(user)
-                .title("")
+                .title(title)
                 .version(0)
                 .root(new ArrayList<>())
                 .boards(new HashMap<>())
