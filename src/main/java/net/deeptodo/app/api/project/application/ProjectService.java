@@ -63,6 +63,7 @@ public class ProjectService {
         return GetProjectByIdResponse.fromProject(findProject);
     }
 
+    @Transactional
     public void deleteProjectById(AuthUserInfo authUserInfo, Long projectId) {
         Long id = projectRepository.getIdByIdAndUserId(projectId, authUserInfo.userId())
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.getErrorCode(ProjectErrorCode.NOT_FOUND_PROJECT)));

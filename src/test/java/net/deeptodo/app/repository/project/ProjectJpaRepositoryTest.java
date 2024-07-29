@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -47,6 +49,29 @@ class ProjectJpaRepositoryTest {
 
         //then
         assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    public void deleteByIdAndUser_id() throws Exception {
+        //given
+        SubscriptionPlan plan = EntityUtils.createDefaultPlan(SubscriptionPlan.builder().build(), 1L);
+        em.persist(plan);
+        User oldUser = EntityUtils.createNewUser(plan);
+        em.persist(oldUser);
+        User newUser = EntityUtils.createNewUser(plan);
+        em.persist(newUser);
+        Project newProject = EntityUtils.createDefaultProject(Project.builder().build(), newUser);
+        em.persist(newProject);
+        em.flush();
+        em.clear();
+
+        //when
+        projectJpaRepository.deleteByIdAndUser_id(newProject.getId(), newUser.getId());
+
+        Optional<Project> project = projectJpaRepository.findById(newProject.getId());
+
+        //then
+        assertThat(project).isEqualTo(Optional.empty());
     }
 
 }
