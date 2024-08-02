@@ -10,11 +10,15 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class Board implements Serializable {
+    private String boardId;
     private String title;
+    private boolean fold;
 
     @Builder
-    public Board(String title) {
+    public Board(String boardId, String title, boolean fold) {
+        this.boardId = boardId;
         this.title = title;
+        this.fold = fold;
     }
 
     @Override

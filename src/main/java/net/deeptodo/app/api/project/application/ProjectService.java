@@ -17,7 +17,9 @@ import net.deeptodo.app.common.exception.ConflictException;
 import net.deeptodo.app.common.exception.ForbiddenException;
 import net.deeptodo.app.common.exception.NotFoundException;
 import net.deeptodo.app.common.exception.UnauthorizedException;
+import net.deeptodo.app.domain.Board;
 import net.deeptodo.app.domain.Project;
+import net.deeptodo.app.domain.Todo;
 import net.deeptodo.app.domain.User;
 import net.deeptodo.app.repository.project.ProjectRepository;
 import net.deeptodo.app.repository.project.dto.PartialUpdateProjectByIdAndUserIdDto;
@@ -26,7 +28,11 @@ import net.deeptodo.app.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +53,7 @@ public class ProjectService {
             throw new ForbiddenException(ProjectErrorCode.getErrorCode(ProjectErrorCode.FORBIDDEN_CREATE_PROJECT));
         }
 
-        Project newProject = Project.createNewProject(user,request.title());
+        Project newProject = Project.createNewProject(user, request.title());
 
         Long projectId = projectRepository.create(newProject);
 
@@ -86,8 +92,31 @@ public class ProjectService {
                 .version(getNextVersion(projectIdAndVersionAndEnabledDto.version()))
                 .title(partialUpdateProjectRequest.title())
                 .root(partialUpdateProjectRequest.root())
-                .boards(partialUpdateProjectRequest.boards())
-                .todos(partialUpdateProjectRequest.todos())
+                .boards(Optional.ofNullable(partialUpdateProjectRequest.boards())
+                        .map(Map::entrySet)
+                        .orElse(Collections.emptySet())
+                        .stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                entry -> new Board(entry.getValue().boardId(), entry.getValue().title(), entry.getValue().fold())
+                        )))
+                .todos(Optional.ofNullable(partialUpdateProjectRequest.todos())
+                        .map(Map::entrySet)
+                        .orElse(Collections.emptySet())
+                        .stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                entry -> new Todo(
+                                        entry.getValue().todoId(),
+                                        entry.getValue().title(),
+                                        entry.getValue().done(),
+                                        entry.getValue().expand(),
+                                        entry.getValue().enableCalendar(),
+                                        entry.getValue().syncGoogleCalendar(),
+                                        entry.getValue().startDate(),
+                                        entry.getValue().endDate()
+                                )
+                        )))
                 .build();
 
         projectRepository.partialUpdateByIdAndUserId(dto);

@@ -21,7 +21,7 @@ public class Todo implements Serializable {
     private LocalDateTime endDate;
 
     @Builder
-    public Todo(boolean done, String title, boolean expand, String todoId, LocalDateTime startDate, LocalDateTime endDate, boolean enableCalendar, boolean syncGoogleCalendar) {
+    public Todo(String todoId, String title, boolean done, boolean expand, boolean enableCalendar, boolean syncGoogleCalendar, LocalDateTime startDate, LocalDateTime endDate) {
         this.todoId = todoId;
         this.title = title;
         this.done = done;

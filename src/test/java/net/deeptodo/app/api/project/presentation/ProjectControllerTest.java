@@ -130,6 +130,7 @@ class ProjectControllerTest extends RestDocsIntegration {
     private Board createBoard(String title) {
         return Board.builder()
                 .title(title)
+                .fold(false)
                 .build();
     }
 

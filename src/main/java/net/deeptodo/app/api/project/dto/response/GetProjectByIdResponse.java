@@ -36,7 +36,7 @@ public record GetProjectByIdResponse
                         .stream()
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
-                                entry -> new RecordBoard(entry.getValue().getTitle())
+                                entry -> new RecordBoard(entry.getValue().getBoardId(),entry.getValue().getTitle(),entry.getValue().isFold())
                         )))
                 .todos(project.getTodos().entrySet()
                         .stream()
@@ -60,7 +60,9 @@ public record GetProjectByIdResponse
     }
 
     public record RecordBoard(
-            String title
+            String boardId,
+            String title,
+            boolean fold
     ) {
         @Builder
         public RecordBoard {
