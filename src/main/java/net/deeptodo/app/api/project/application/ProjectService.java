@@ -28,11 +28,8 @@ import net.deeptodo.app.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -93,31 +90,45 @@ public class ProjectService {
                 .version(getNextVersion(projectIdAndVersionAndEnabledDto.version()))
                 .title(partialUpdateProjectRequest.title())
                 .root(partialUpdateProjectRequest.root())
-                .boards(Optional.ofNullable(partialUpdateProjectRequest.boards())
-                        .map(Map::entrySet)
-                        .orElse(Collections.emptySet())
-                        .stream()
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                entry -> new Board(entry.getValue().boardId(), entry.getValue().title(), entry.getValue().fold(),entry.getValue().trees())
-                        )))
-                .todos(Optional.ofNullable(partialUpdateProjectRequest.todos())
-                        .map(Map::entrySet)
-                        .orElse(Collections.emptySet())
-                        .stream()
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                entry -> new Todo(
-                                        entry.getValue().todoId(),
-                                        entry.getValue().title(),
-                                        entry.getValue().done(),
-                                        entry.getValue().expand(),
-                                        entry.getValue().enableCalendar(),
-                                        entry.getValue().syncGoogleCalendar(),
-                                        entry.getValue().startDate(),
-                                        entry.getValue().endDate()
-                                )
-                        )))
+                .boards(partialUpdateProjectRequest.boards() == null
+                        ? null
+                        : partialUpdateProjectRequest.boards().entrySet().stream()
+                        .collect(
+                                HashMap::new,
+                                (map, entry) -> map.put(
+                                        entry.getKey(),
+                                        entry.getValue() == null
+                                                ? null
+                                                : new Board(
+                                                entry.getValue().boardId(),
+                                                entry.getValue().title(),
+                                                entry.getValue().fold(),
+                                                entry.getValue().trees())
+                                ),
+                                HashMap::putAll
+                        ))
+                .todos((partialUpdateProjectRequest.todos() == null
+                        ? null
+                        : partialUpdateProjectRequest.todos().entrySet().stream()
+                        .collect(
+                                HashMap::new,
+                                (map, entry) -> map.put(
+                                        entry.getKey(),
+                                        entry.getValue() == null
+                                                ? null
+                                                : new Todo(
+                                                entry.getValue().todoId(),
+                                                entry.getValue().title(),
+                                                entry.getValue().done(),
+                                                entry.getValue().expand(),
+                                                entry.getValue().enableCalendar(),
+                                                entry.getValue().syncGoogleCalendar(),
+                                                entry.getValue().startDate(),
+                                                entry.getValue().endDate())
+                                ),
+                                HashMap::putAll
+                        )
+                ))
                 .build();
 
         projectRepository.partialUpdateByIdAndUserId(dto);

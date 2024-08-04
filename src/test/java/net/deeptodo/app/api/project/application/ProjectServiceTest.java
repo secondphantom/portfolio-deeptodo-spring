@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,7 +69,7 @@ class ProjectServiceTest {
     public void createProject_fail_not_found_user() {
         //when & then
         assertThatThrownBy(
-                () -> projectService.createProject(new AuthUserInfo(2L),new CreateProjectRequest("title"))
+                () -> projectService.createProject(new AuthUserInfo(2L), new CreateProjectRequest("title"))
         ).isInstanceOf(UnauthorizedException.class);
     }
 
@@ -91,7 +93,7 @@ class ProjectServiceTest {
 
         //when & then
         assertThatThrownBy(
-                () -> projectService.createProject(new AuthUserInfo(newUser.getId()),new CreateProjectRequest("title"))
+                () -> projectService.createProject(new AuthUserInfo(newUser.getId()), new CreateProjectRequest("title"))
         ).isInstanceOf(ForbiddenException.class);
     }
 
@@ -131,7 +133,7 @@ class ProjectServiceTest {
         em.persist(plan);
         User newUser = EntityUtils.createNewUser(plan);
         em.persist(newUser);
-        Project newProject = Project.createNewProject(newUser,"title");
+        Project newProject = Project.createNewProject(newUser, "title");
         em.persist(newProject);
         em.flush();
         em.clear();
@@ -160,9 +162,16 @@ class ProjectServiceTest {
         em.flush();
         em.clear();
 
+        Map<String, PartialUpdateProjectRequest.RecordBoard> boards = new HashMap<>();
+        boards.put("board1", null);
+        Map<String, PartialUpdateProjectRequest.RecordTodo> todos = new HashMap<>();
+        todos.put("todo1", null);
+
         PartialUpdateProjectRequest dto = PartialUpdateProjectRequest.builder()
                 .version(99)
                 .title("updated")
+                .boards(boards)
+                .todos(todos)
                 .build();
 
         //when
@@ -175,8 +184,6 @@ class ProjectServiceTest {
 
         assertThat(findProject.getId()).isEqualTo(newProject.getId());
         assertThat(findProject.getVersion()).isEqualTo(0);
-
-
     }
 
 
