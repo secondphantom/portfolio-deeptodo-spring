@@ -4,6 +4,8 @@ package net.deeptodo.app.domain;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -13,12 +15,14 @@ public class Board implements Serializable {
     private String boardId;
     private String title;
     private boolean fold;
+    private List<?> trees = new ArrayList<>();
 
     @Builder
-    public Board(String boardId, String title, boolean fold) {
+    public Board(String boardId, String title, boolean fold, List<?> trees) {
         this.boardId = boardId;
         this.title = title;
         this.fold = fold;
+        this.trees = trees;
     }
 
     @Override

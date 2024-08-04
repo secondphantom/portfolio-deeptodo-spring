@@ -54,7 +54,7 @@ class ProjectRepositoryTest {
                 .build();
         todos.put("todo1", todo);
 
-        List root = List.of("boardId", List.of("todoId", List.of()));
+        List root = List.of("boardId");
 
 
         Project project = EntityUtils.createDefaultProject(Project.builder()

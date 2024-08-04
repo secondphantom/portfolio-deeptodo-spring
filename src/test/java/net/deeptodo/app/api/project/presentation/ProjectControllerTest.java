@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,8 +100,8 @@ class ProjectControllerTest extends RestDocsIntegration {
     private Project createProject(User user) {
 
         Map<String, Board> boards = new HashMap<>();
-        Board board1 = createBoard("board title 1");
-        Board board2 = createBoard("board title 2");
+        Board board1 = createBoard("board title 1",List.of("todoId1", "todoId2"));
+        Board board2 = createBoard("board title 2",new ArrayList<>());
         boards.put("boardId1", board1);
         boards.put("boardId2", board2);
 
@@ -110,7 +111,7 @@ class ProjectControllerTest extends RestDocsIntegration {
         todos.put(todo1.getTodoId(), todo1);
         todos.put(todo2.getTodoId(), todo2);
 
-        List root = List.of(List.of("boardId1", List.of("todoId1", "todoId2")), List.of("boardId1"));
+        List root = List.of("boardId1","boardId2");
 
         Project project = Project.builder()
 //                .id(projectId)
@@ -127,10 +128,11 @@ class ProjectControllerTest extends RestDocsIntegration {
         return defaultProject;
     }
 
-    private Board createBoard(String title) {
+    private Board createBoard(String title, List<?> trees) {
         return Board.builder()
                 .title(title)
                 .fold(false)
+                .trees(trees)
                 .build();
     }
 
@@ -167,7 +169,10 @@ class ProjectControllerTest extends RestDocsIntegration {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.title").value(getProjectByIdResponse.title()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.root").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.boards").isMap())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.boards.boardId1.boardId").value(getProjectByIdResponse.boards().get("boardId1").boardId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.boards.boardId1.title").value(getProjectByIdResponse.boards().get("boardId1").title()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.boards.boardId1.fold").value(getProjectByIdResponse.boards().get("boardId1").fold()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.boards.boardId1.trees").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos").isMap())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos.todoId1.done").value(getProjectByIdResponse.todos().get("todoId1").done()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.todos.todoId1.title").value(getProjectByIdResponse.todos().get("todoId1").title()))

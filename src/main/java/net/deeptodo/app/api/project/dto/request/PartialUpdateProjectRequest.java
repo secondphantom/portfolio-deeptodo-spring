@@ -33,7 +33,8 @@ public record PartialUpdateProjectRequest(
     public record RecordBoard(
             String boardId,
             String title,
-            boolean fold
+            boolean fold,
+            List<?> trees
     ) {
         @Builder
         public RecordBoard {

@@ -77,6 +77,7 @@ public class ProjectService {
         projectRepository.deleteByIdAndUserId(id, authUserInfo.userId());
     }
 
+    @Transactional
     public GetProjectVersionAndEnabledByIdResponse updateProjectById(
             AuthUserInfo authUserInfo,
             Long projectId,
@@ -98,7 +99,7 @@ public class ProjectService {
                         .stream()
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
-                                entry -> new Board(entry.getValue().boardId(), entry.getValue().title(), entry.getValue().fold())
+                                entry -> new Board(entry.getValue().boardId(), entry.getValue().title(), entry.getValue().fold(),entry.getValue().trees())
                         )))
                 .todos(Optional.ofNullable(partialUpdateProjectRequest.todos())
                         .map(Map::entrySet)

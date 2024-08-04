@@ -120,7 +120,7 @@ class ProjectNativeQueryRepositoryTest {
                 .userId(newUser.getId())
                 .version(updatedVersion)
                 .title(updatedTitle)
-                .root(List.of("key", List.of()))
+                .root(List.of("key"))
                 .boards(updatedBoards)
                 .todos(updatedTodos).build();
 
