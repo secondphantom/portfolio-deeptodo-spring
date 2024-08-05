@@ -73,8 +73,8 @@ public class AuthService {
         User newUser = User.createNewUser(
                 oauthUser.name(),
                 oauthUser.email(),
-                oauthUser.userId(),
                 oauthUser.avatarUrl(),
+                oauthUser.userId(),
                 OauthServerType.GOOGLE,
                 freePlan
         );

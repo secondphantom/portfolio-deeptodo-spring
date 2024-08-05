@@ -28,4 +28,13 @@ public class UserRepository {
     public void updateUser(User user) {
         userJpaRepository.save(user);
     }
+
+    public User save(User user) {
+        return userJpaRepository.save(user);
+    }
+
+
+    public void delete(User user) {
+        userJpaRepository.delete(user);
+    }
 }
