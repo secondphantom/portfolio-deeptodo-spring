@@ -5,6 +5,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP NOT NULL,
     nick_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
+    avatar_url VARCHAR(600) NOT NULL,
     billing_key VARCHAR(255) NOT NULL,
     oauth_server_id VARCHAR(255) NOT NULL,
     oauth_server_type VARCHAR(50) NOT NULL,

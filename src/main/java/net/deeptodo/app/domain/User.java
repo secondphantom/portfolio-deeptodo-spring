@@ -21,6 +21,7 @@ public class User extends BaseTimeEntity {
     private Long id;
     private String nickName;
     private String email;
+    private String avatarUrl;
     private String billingKey;
     private String oauthServerId;
     @Enumerated(EnumType.STRING)
@@ -40,6 +41,7 @@ public class User extends BaseTimeEntity {
     public User(Long id,
                 String nickName,
                 String email,
+                String avatarUrl,
                 String billingKey,
                 String oauthServerId,
                 OauthServerType oauthServerType,
@@ -48,6 +50,7 @@ public class User extends BaseTimeEntity {
         this.id = id;
         this.nickName = nickName;
         this.email = email;
+        this.avatarUrl = avatarUrl;
         this.billingKey = billingKey;
         this.oauthServerId = oauthServerId;
         this.oauthServerType = oauthServerType;
@@ -58,6 +61,7 @@ public class User extends BaseTimeEntity {
     static public User createNewUser(
             final String nickName,
             final String email,
+            final String avatarUrl,
             final String oauthServerId,
             final OauthServerType oauthServerType,
             final SubscriptionPlan plan
@@ -65,6 +69,7 @@ public class User extends BaseTimeEntity {
         User user = User.builder()
                 .nickName(nickName)
                 .email(email)
+                .avatarUrl(avatarUrl)
                 .billingKey("")
                 .oauthServerId(oauthServerId)
                 .oauthServerType(oauthServerType)

@@ -12,6 +12,7 @@ public class EntityUtils {
                 .id(user.getId() != null ? user.getId() : null)
                 .nickName(user.getNickName() != null ? user.getNickName() : "nickName")
                 .email(user.getEmail() != null ? user.getEmail() : "email")
+                .avatarUrl(user.getAvatarUrl() != null ? user.getAvatarUrl() : "avatarUrl")
                 .billingKey(user.getBillingKey() != null ? user.getBillingKey() : "billingKey")
                 .oauthServerId(user.getOauthServerId() != null ? user.getOauthServerId() : "oauthServerId")
                 .oauthServerType(user.getOauthServerType() != null ? user.getOauthServerType() : OauthServerType.GOOGLE)
@@ -25,6 +26,7 @@ public class EntityUtils {
                 "nickName",
                 "email@email.com",
                 "oauthServerId",
+                "avatarUrl",
                 OauthServerType.GOOGLE,
                 plan
         );

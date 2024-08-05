@@ -101,14 +101,16 @@ public class GoogleProviderUtils implements ProvidersUtils {
 
 
     private OauthUser parseUserInfo(String json) throws Exception {
+        System.out.println("json = " + json);
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(json);
-
         String userId = rootNode.path("sub").asText();
         String name = rootNode.path("name").asText();
         String email = rootNode.path("email").asText();
+        String avatarUrl = rootNode.path("picture").asText();
 
-        return new OauthUser(userId, name, email);
+        return new OauthUser(userId, name, email,avatarUrl);
     }
 
 }

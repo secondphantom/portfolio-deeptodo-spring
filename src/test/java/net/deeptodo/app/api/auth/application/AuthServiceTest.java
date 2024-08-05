@@ -67,7 +67,7 @@ class AuthServiceTest {
         em.flush();
         em.clear();
 
-        OauthUser oauthUser = new OauthUser("userId", "name", "email");
+        OauthUser oauthUser = new OauthUser("userId", "name", "email","avatarUrl");
 
         given(googleProviderUtils.getOauthUser("code")).willReturn(
                 Optional.of(oauthUser)
