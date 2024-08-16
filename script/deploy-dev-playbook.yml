@@ -1,0 +1,77 @@
+---
+- name: Blue-Green Deployment Switch with Docker Image Update
+  hosts: devserver
+  become: yes
+  become_method: sudo
+  become_user: root
+  vars:
+    nginx_container_name: nginx_container
+    nginx_config_path: ~/nginx/nginx.conf
+    blue_service: "server blue:8787;"
+    green_service: "server green:8787;"
+    blue_container_name: blue
+    green_container_name: green
+    blue_export_port: "8080"
+    green_export_port: "8081"
+    blue_image: hub.secondphantom.com/deeptodo-dev-image
+    green_image: hub.secondphantom.com/deeptodo-dev-image
+    docker_network: blue-green
+  tasks:
+
+    - name: Check current active environment in Nginx config
+      command: grep 'server' {{ nginx_config_path }}
+      register: current_env
+      # ignore_errors: yes
+
+    - name: Determine the target environment
+      set_fact:
+        target_current_env: "{{ blue_service }}"
+        target_env: "{{ green_service }}"
+        target_container: "{{ green_container_name }}"
+        target_export_port: "{{ green_export_port }}"
+        target_image: "{{ green_image }}"
+      when: "'{{ blue_service }}' in current_env.stdout"
+
+    - name: Determine the current environment
+      set_fact:
+        target_current_env: "{{ green_service }}"
+        target_env: "{{ blue_service }}"
+        target_container: "{{ blue_container_name }}"
+        target_export_port: "{{ blue_export_port }}"
+        target_image: "{{ blue_image }}"
+      when: "'{{ green_service }}' in current_env.stdout"
+
+    - name: Pull the latest Docker image for the target environment
+      shell: "docker pull {{ target_image }}"
+
+    - name: Stop the target container if it is already running
+      shell: "docker stop {{ target_container }}"
+      ignore_errors: yes
+
+    - name: Remove the target container if it exists
+      shell: "docker rm {{ target_container }}"
+      ignore_errors: yes
+
+    - name: Run the target container with the updated image
+      shell: |
+        docker run -d --name {{ target_container }} --network {{ docker_network }} -p {{ target_export_port }}:8787  {{ target_image }}
+
+    - name: Backup current Nginx config
+      shell: "cp {{ nginx_config_path }} {{ nginx_config_path }}.bak"
+      # copy:
+      #   src: "{{ nginx_config_path }}"
+      #   dest: "{{ nginx_config_path }}.bak"
+
+    - name: Update Nginx config to switch to {{ target_env }}
+      lineinfile:
+        path: "{{ nginx_config_path }}"
+        regexp: "{{ target_current_env }}"
+        line: "{{ target_env }}"
+        state: present
+
+    - name: Reload Nginx to apply the new configuration
+      shell: "docker exec {{ nginx_container_name }} nginx -s reload"
+
+    - name: Output the currently active environment
+      debug:
+        msg: "Switched to {{ target_env.split(':')[0] }} environment using the latest image."

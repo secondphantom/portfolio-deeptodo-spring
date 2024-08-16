@@ -37,5 +37,6 @@ out/
 .vscode/
 
 application.yml
+application-prd.yml
 
-
+/src/main/resources/static/**

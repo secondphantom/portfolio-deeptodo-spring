@@ -1,0 +1,19 @@
+- hosts: ansible
+  become: yes
+  vars:
+    docker_hub: hub.secondphantom.com
+    docker_image_name: deeptodo-prd-image
+    code_dest: "./target/deeptodo/prd"
+    export_port: 8787
+
+  tasks:
+
+    - name: remove current docker image
+      command: docker rmi {{ docker_hub }}/{{ docker_image_name }}
+      ignore_errors: yes
+
+    - name: Docker build image
+      command: docker build -f {{ code_dest }}/Dockerfile -t {{ docker_hub }}/{{ docker_image_name }} {{ code_dest }}
+
+    - name: Docker image push
+      command: docker push {{ docker_hub }}/{{ docker_image_name }}
