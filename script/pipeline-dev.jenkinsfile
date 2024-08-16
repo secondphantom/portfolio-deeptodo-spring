@@ -4,22 +4,17 @@ pipeline {
     stages {
         stage('clone code') {
             steps {
-                git branch: 'main', credentialsId: 'GITHUB_TOKEN', url: 'https://github.com/secondphantom/deeptodo-spring'
+                git branch: 'dev', credentialsId: 'GITHUB_TOKEN', url: 'https://github.com/secondphantom/deeptodo-spring'
             }
         }
         stage('copy env') {
             steps {
-                withCredentials(
-                  [
-                    file(credentialsId: 'deeptodo-prd-properites', variable: 'PROPERTIES_FILE'),
-                    file(credentialsId: 'deeptodo-test-properites', variable: 'PROPERTIES_TEST_FILE')
-                  ]
-                ) {
+                withCredentials([file(credentialsId: 'deeptodo-dev-properites', variable: 'PROPERTIES_FILE'),file(credentialsId: 'deeptodo-test-properites', variable: 'PROPERTIES_TEST_FILE')]) {
                     script {
                         sh 'mkdir -p src/main/resources'
                         sh 'mkdir -p src/test/resources'
                         sh 'cp -f $PROPERTIES_FILE src/main/resources/application.yml'
-                        sh 'cp -f $PROPERTIES_TEST_FILE src/main/resources/application.yml'
+                        sh 'cp -f $PROPERTIES_TEST_FILE src/test/resources/application.yml'
                     }
                 }
             }
@@ -28,18 +23,20 @@ pipeline {
             steps {
                 sshPublisher(
                     publishers:
-                    [sshPublisherDesc(configName: 'ansible-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'rm -rf target/deeptodo/prd', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: ''), sshTransfer(cleanRemote: false, excludes: '', execCommand: 'echo "copy"', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'target/deeptodo/prd', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '**')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
+                    [sshPublisherDesc(configName: 'ansible-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'rm -rf target/deeptodo/dev', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: ''), sshTransfer(cleanRemote: false, excludes: '', execCommand: 'echo "copy"', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'target/deeptodo/dev', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '**')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
                 )
             }
         }
         stage('build docker file') {
             steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'ansible-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'ansible-playbook -i hosts.yml ./target/deeptodo/prd/script/docker-prd-build-playbook.yml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                timeout(time: 4, unit: 'MINUTES') {
+                  sshPublisher(publishers: [sshPublisherDesc(configName: 'ansible-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'ansible-playbook -i hosts.yml ./target/deeptodo/dev/script/docker-dev-build-playbook.yml', execTimeout: 240000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                }
             }
         }
-        stage('deploy prd') {
+        stage('deploy dev') {
             steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'ansible-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'ansible-playbook -i hosts.yml ./target/deeptodo/prd/script/deploy-prd-playbook.yml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'ansible-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'ansible-playbook -i hosts.yml ./target/deeptodo/dev/script/deploy-dev-playbook.yml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
             }
         }
 

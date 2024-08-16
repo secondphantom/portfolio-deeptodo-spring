@@ -19,7 +19,7 @@ pipeline {
                         sh 'mkdir -p src/main/resources'
                         sh 'mkdir -p src/test/resources'
                         sh 'cp -f $PROPERTIES_FILE src/main/resources/application.yml'
-                        sh 'cp -f $PROPERTIES_TEST_FILE src/main/resources/application.yml'
+                        sh 'cp -f $PROPERTIES_TEST_FILE src/test/resources/application.yml'
                     }
                 }
             }
@@ -34,7 +34,9 @@ pipeline {
         }
         stage('build docker file') {
             steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'ansible-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'ansible-playbook -i hosts.yml ./target/deeptodo/prd/script/docker-prd-build-playbook.yml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                timeout(time: 4, unit: 'MINUTES') {
+                  sshPublisher(publishers: [sshPublisherDesc(configName: 'ansible-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'ansible-playbook -i hosts.yml ./target/deeptodo/prd/script/docker-prd-build-playbook.yml', execTimeout: 240000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                }
             }
         }
         stage('deploy prd') {
