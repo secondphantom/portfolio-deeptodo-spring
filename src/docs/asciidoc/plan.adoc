@@ -1,0 +1,8 @@
+:source-highlighter: highlightjs
+
+== 플랜
+
+=== 모든 플랜 조회
+
+operation::plan-controller-test/get-plans[snippets='http-request,http-response']
+

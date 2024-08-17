@@ -1,0 +1,14 @@
+:doctype: book
+:source-highlighter: highlightjs
+:sectlinks:
+:toc: left
+:toclevels: 2
+
+= DeepTodo Api Doc
+
+toc::[]
+
+include::auth.adoc[]
+include::account.adoc[]
+include::project.adoc[]
+include::plan.adoc[]

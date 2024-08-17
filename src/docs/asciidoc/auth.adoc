@@ -1,21 +1,33 @@
-== 로그인
-=== 소셜 로그인
-==== GOOGLE 로그인
+:source-highlighter: highlightjs
 
-===== 로그인 URL 반환
+
+== 인증
+
+=== 로그인
+
+==== 소셜 로그인
+
+===== GOOGLE 로그인
+
+====== Redirect Url 조회
+
 operation::auth-controller-test/login-oauth-google_success[snippets='http-request,http-response']
 
-===== 로그인
+====== CallBack Url 확인
+
 operation::auth-controller-test/login-oauth-google-callback_success[snippets='http-request,http-response']
 
-== 토큰
+=== 토큰
 
-=== Access Token 확인
+==== Access Token 확인
+
 operation::auth-controller-test/verify-access-token_success[snippets='http-request,http-response']
 
-=== Refresh Token
+==== Refresh Token 확인
+
 operation::auth-controller-test/refresh-access-token_success[snippets='http-request,http-response']
 
-== 로그아웃
+=== 로그아웃 요청
+
 operation::auth-controller-test/sign-out_success[snippets='http-request,http-response']
 

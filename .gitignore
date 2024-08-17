@@ -38,5 +38,6 @@ out/
 
 application.yml
 application-prd.yml
+application-dev.yml
 
-/src/main/resources/static/**
+/src/main/resources/static/docs/**

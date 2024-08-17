@@ -1,0 +1,27 @@
+:source-highlighter: highlightjs
+
+== 프로젝트
+
+=== 프로젝트 생성
+
+operation::project-controller-test/create-project_success[snippets='http-request,http-response']
+
+=== 프로젝트 리스트 조회
+
+operation::project-controller-test/get-projects-by-query_success[snippets='http-request,http-response']
+
+=== 프로젝트 조회
+
+operation::project-controller-test/get-project-by-id_success[snippets='http-request,http-response']
+
+=== 프로젝트 업데이트
+
+operation::project-controller-test/update-project-by-id_success[snippets='http-request,http-response']
+
+=== 프로젝트 삭제
+
+operation::project-controller-test/delete-project-by-id_success[snippets='http-request,http-response']
+
+
+
+

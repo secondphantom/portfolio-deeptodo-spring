@@ -1,0 +1,24 @@
+:source-highlighter: highlightjs
+
+== 계정
+
+=== 유저
+
+==== 프로필 조회
+
+operation::user-controller-test/get-user-profile_success[snippets='http-request,http-response']
+
+==== 프로필 업데이트
+
+operation::user-controller-test/update-user-profile_success[snippets='http-request,http-response']
+
+==== 삭제
+
+operation::user-controller-test/delete-user_success[snippets='http-request,http-response']
+
+=== 구독
+
+==== 조회
+
+operation::subscription-controller-test/get-subscription_success[snippets='http-request,http-response']
+
