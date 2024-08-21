@@ -130,6 +130,7 @@ class ProjectNativeQueryRepositoryTest {
 
         Project findProject = projectRepository.getByIdAndUserId(newProject.getId(), newUser.getId()).get();
 
+        System.out.println("findProject = " + findProject.getUpdatedAt());
 
         assertThat(findProject.getVersion()).isEqualTo(updatedVersion);
         assertThat(findProject.getTitle()).isEqualTo(updatedTitle);
@@ -140,6 +141,9 @@ class ProjectNativeQueryRepositoryTest {
         assertThat(findProject.getTodos().get("todo1")).isEqualTo(updatedTodos.get("todo1"));
         assertThat(findProject.getTodos().containsKey("todo2")).isEqualTo(false);
         assertThat(findProject.getTodos().containsKey("todo3")).isEqualTo(false);
+
+        assertThat(findProject.getUpdatedAt()).isAfter(newProject.getUpdatedAt());
+
 
     }
 }

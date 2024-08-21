@@ -10,6 +10,7 @@ import net.deeptodo.app.repository.project.dto.PartialUpdateProjectByIdAndUserId
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -120,6 +121,11 @@ public class ProjectNativeQueryRepository {
             return;
         }
 
+        LocalDateTime updatedAt = LocalDateTime.now();
+        setStrList.add("updated_at = :updatedAt");
+        keyWithparamList.add(
+                new KeyWithParam("updatedAt", updatedAt)
+        );
         String updateStr = "UPDATE projects ";
         String whereStr = " WHERE id = :projectId AND user_id = :userId";
         keyWithparamList.add(
