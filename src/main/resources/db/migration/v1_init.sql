@@ -72,11 +72,9 @@ CREATE TABLE payments (
 );
 
 CREATE INDEX idx_user_oauth_server_id ON users(oauth_server_id);
-CREATE INDEX idx_user_email ON users(email);
-CREATE INDEX idx_project_user_id ON projects(user_id);
+CREATE UNIQUE INDEX uq_user_email ON users(email);
+CREATE INDEX idx_user_created_at_desc ON projects(created_at DESC);
 CREATE INDEX idx_project_user_id_created_at_desc ON projects(user_id, created_at DESC);
 CREATE INDEX idx_project_user_id_updated_at_desc ON projects(user_id, updated_at DESC);
-CREATE INDEX idx_payment_user_id ON payments(user_id);
-CREATE INDEX idx_payment_user_id_created_at_desc ON projects(user_id, created_at DESC);
-CREATE INDEX idx_subscription_user_id ON subscriptions(user_id);
-
+CREATE INDEX idx_payment_user_id_created_at_desc ON payments(user_id, created_at DESC);
+CREATE INDEX idx_subscription_user_id ON subscriptions(user_id); 

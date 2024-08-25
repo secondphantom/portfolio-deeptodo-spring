@@ -41,3 +41,7 @@ application-prd.yml
 application-dev.yml
 
 /src/main/resources/static/docs/**
+
+exclude**
+
+README.pdf
